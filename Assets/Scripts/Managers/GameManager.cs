@@ -40,8 +40,10 @@ public class GameManager : MonoBehaviour
     }
 
     private void StartGame() {
-        m_MessageScreen.enabled = true;
+        m_StartButton.enabled = false;
+        m_QuitButton.enabled = false;
         m_StartScreen.enabled = false;
+        m_MessageScreen.enabled = true;
 
         SpawnAllTanks();
         SetCameraTargets();

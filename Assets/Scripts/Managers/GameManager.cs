@@ -11,6 +11,10 @@ public class GameManager : MonoBehaviour
     public Text m_MessageText;                  // Reference to the overlay Text to display winning text, etc.
     public GameObject m_TankPrefab;             // Reference to the prefab the players will control.
     public TankManager[] m_Tanks;               // A collection of managers for enabling and disabling different aspects of the tanks.
+    public Canvas m_MessageScreen;
+    public Canvas m_StartScreen;
+    public Button m_StartButton;
+    public Button m_QuitButton;
 
 
     private int m_RoundNumber;                  // Which round the game is currently on.
@@ -26,11 +30,25 @@ public class GameManager : MonoBehaviour
         m_StartWait = new WaitForSeconds (m_StartDelay);
         m_EndWait = new WaitForSeconds (m_EndDelay);
 
+        m_MessageScreen.enabled = false;
+        m_StartButton.onClick.AddListener(StartGame);
+        m_QuitButton.onClick.AddListener(QuitGame);
+    }
+
+    private void QuitGame() {
+        Application.Quit();
+    }
+
+    private void StartGame() {
+        m_MessageScreen.enabled = true;
+        m_StartScreen.enabled = false;
+
         SpawnAllTanks();
         SetCameraTargets();
 
         // Once the tanks have been created and the camera is using them as targets, start the game.
         StartCoroutine (GameLoop ());
+
     }
 
 

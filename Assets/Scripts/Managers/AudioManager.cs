@@ -9,26 +9,14 @@ public class AudioManager : MonoBehaviour
     public AudioMixer masterMixer;
 
     public void setSfxLvl(float sfxLvl) {
-        masterMixer.SetFloat("sfxVol", sfxLvl);
+        masterMixer.SetFloat("sfxVol", Mathf.Log10(sfxLvl) * 20);
     }
 
     public void setMusicLvl(float musicLvl) {
-        masterMixer.SetFloat("musicVol", musicLvl);
+        masterMixer.SetFloat("musicVol", Mathf.Log10(musicLvl) * 20);
     }
 
     public void setDrivingLvl(float drivingLvl) {
-        masterMixer.SetFloat("drivingVol", drivingLvl);
+        masterMixer.SetFloat("drivingVol", Mathf.Log10(drivingLvl) * 20);
     }
-    // public void setSfxLvl(float sfxLvl) {
-    //     masterMixer.SetFloat("sfxVol", sfxLvl);
-    // }
-    // void Start()
-    // {
-        
-    // }
-
-    // void Update()
-    // {
-        
-    // }
 }

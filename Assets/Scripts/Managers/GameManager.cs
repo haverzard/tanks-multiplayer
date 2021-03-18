@@ -5,33 +5,53 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public int m_NumRoundsToWin = 5;        
-    public float m_StartDelay = 3f;         
-    public float m_EndDelay = 3f;           
-    public CameraControl m_CameraControl;   
-    public Text m_MessageText;              
-    public GameObject m_TankPrefab;         
-    public TankManager[] m_Tanks;           
+    public int m_NumRoundsToWin = 5;
+    public float m_StartDelay = 3f;
+    public float m_EndDelay = 3f;
+    public CameraControl m_CameraControl;
+    public Text m_MessageText;
+    public GameObject m_TankPrefab;
+    public TankManager[] m_Tanks;
+
+    public Canvas m_MessageScreen;
+    public Canvas m_SettingsScreen;
+    public Canvas m_StartScreen;
+    public Button m_StartButton;
+    public Button m_QuitButton;
 
 
-    private int m_RoundNumber;              
-    private WaitForSeconds m_StartWait;     
-    private WaitForSeconds m_EndWait;       
+    private int m_RoundNumber;
+    private WaitForSeconds m_StartWait;
+    private WaitForSeconds m_EndWait;
     private TankManager m_RoundWinner;
-    private TankManager m_GameWinner;       
+    private TankManager m_GameWinner;
 
 
     private void Start()
     {
-        m_StartWait = new WaitForSeconds(m_StartDelay);
-        m_EndWait = new WaitForSeconds(m_EndDelay);
+        m_StartWait = new WaitForSeconds (m_StartDelay);
+        m_EndWait = new WaitForSeconds (m_EndDelay);
+
+        m_MessageScreen.enabled = false;
+        m_SettingsScreen.enabled = false;
+        m_StartButton.onClick.AddListener(StartGame);
+        m_QuitButton.onClick.AddListener(QuitGame);
+    }
+
+    private void QuitGame() {
+        Application.Quit();
+    }
+
+    private void StartGame() {
+        m_StartButton.enabled = false;
+        m_QuitButton.enabled = false;
+        m_StartScreen.enabled = false;
+        m_MessageScreen.enabled = true;
 
         SpawnAllTanks();
         SetCameraTargets();
-
         StartCoroutine(GameLoop());
     }
-
 
     private void SpawnAllTanks()
     {

@@ -4759,6 +4759,7 @@ ParticleSystemRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: c4c5f95d06932564c8672b4bafeb1b28, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4813,7 +4814,7 @@ GameObject:
   - component: {fileID: 436668}
   - component: {fileID: 19874418}
   - component: {fileID: 19921400}
-  - component: {fileID: 1028670291}
+  - component: {fileID: 6720968238487285063}
   m_Layer: 0
   m_Name: TankExplosion
   m_TagString: Untagged
@@ -9564,6 +9565,7 @@ ParticleSystemRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 10301, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9607,7 +9609,7 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
---- !u!82 &1028670291
+--- !u!82 &6720968238487285063
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9616,7 +9618,7 @@ AudioSource:
   m_GameObject: {fileID: 151086}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: -3518083414485026770, guid: 23f091ad5f926c24a946b9f0c77ed68a,
+  OutputAudioMixerGroup: {fileID: -112414693167652266, guid: b9607f1f2ca4c40478efd0932806434b,
     type: 2}
   m_audioClip: {fileID: 8300000, guid: 5c27182a28a7eb942a362e6d198fe0e6, type: 3}
   m_PlayOnAwake: 0
@@ -14463,6 +14465,7 @@ ParticleSystemRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 10301, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 20
-  productGUID: 744db6be126119b4c88b7fe715d5ee60
+  productGUID: 93859fe9c2c1bf449b45f932659738be
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -247,7 +247,7 @@ PlayerSettings:
   iOSRequireARKit: 0
   iOSAutomaticallyDetectAndAddCapabilities: 1
   appleEnableProMotion: 0
-  clonedFromGUID: 22d7809e6dc906b40aa3bdfa6c636a1e
+  clonedFromGUID: 8c9451da877752348a3d6a190ca0bc31
   templatePackageId: 
   templateDefaultScene: 
   AndroidTargetArchitectures: 5
@@ -715,7 +715,7 @@ PlayerSettings:
   cloudServicesEnabled:
     Analytics: 0
     Build: 0
-    Collab: 1
+    Collab: 0
     ErrorHub: 0
     Game_Performance: 0
     Hub: 0
@@ -734,10 +734,10 @@ PlayerSettings:
     m_VersionCode: 1
     m_VersionName: 
   apiCompatibilityLevel: 6
-  cloudProjectId: 332c7e8e-63ba-4801-8bc9-26a650867a8f
+  cloudProjectId: 
   framebufferDepthMemorylessMode: 0
-  projectName: Tanks
-  organizationId: unity_13518120
+  projectName: TANKS
+  organizationId: 
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
   disableOldInputManagerSupport: 0

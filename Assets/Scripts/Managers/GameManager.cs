@@ -12,9 +12,12 @@ public class GameManager : MonoBehaviour
     public Text m_MessageText;
     public GameObject m_TankPrefab;
     public TankManager[] m_Tanks;
+
     public Canvas m_MessageScreen;
+    public Canvas m_SettingsScreen;
     public Canvas m_StartScreen;
     public Button m_StartButton;
+    public Button m_SettingsButton;
     public Button m_QuitButton;
 
 
@@ -31,8 +34,14 @@ public class GameManager : MonoBehaviour
         m_EndWait = new WaitForSeconds (m_EndDelay);
 
         m_MessageScreen.enabled = false;
+        m_SettingsScreen.enabled = false;
         m_StartButton.onClick.AddListener(StartGame);
         m_QuitButton.onClick.AddListener(QuitGame);
+        m_SettingsButton.onClick.AddListener(ToggleSettings);
+    }
+
+    private void ToggleSettings() {
+        m_SettingsScreen.enabled = !m_SettingsScreen.enabled;
     }
 
     private void QuitGame() {

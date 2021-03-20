@@ -15,7 +15,7 @@ public class AgentShooting : MonoBehaviour
     public float m_MaxChargeTime = 0.75f;
     public LayerMask m_TankMask;
 
-    
+    private int Owner;    
     private string m_FireButton;         
     private float m_CurrentLaunchForce;  
     private float m_ChargeSpeed;         
@@ -32,6 +32,7 @@ public class AgentShooting : MonoBehaviour
     private void Start()
     {
         m_FireButton = "Fire" + m_PlayerNumber;
+        Owner = GetComponent<AgentBrain>().Owner;
 
         m_ChargeSpeed = (m_MaxLaunchForce - m_MinLaunchForce) / m_MaxChargeTime;
         StartCoroutine(FireLoop());
@@ -79,9 +80,12 @@ public class AgentShooting : MonoBehaviour
         {
             Rigidbody targetRigidbody = colliders[i].GetComponent<Rigidbody>();
             if (!targetRigidbody) continue;
-
+            
             TankHealth tankHealth = targetRigidbody.GetComponent<TankHealth>();
             if (!tankHealth)
+                continue;
+            
+            if (targetRigidbody.GetComponent<TankMovement>().m_PlayerNumber == Owner)
                 continue;
 
             transform.LookAt(targetRigidbody.GetComponent<Transform>());

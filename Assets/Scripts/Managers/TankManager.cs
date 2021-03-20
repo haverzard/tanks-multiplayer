@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
 public class TankManager
 {
-    public Color m_PlayerColor;            
-    public Transform m_SpawnPoint;         
-    [HideInInspector] public int m_PlayerNumber;             
+    public Color m_PlayerColor;
+    public Transform m_SpawnPoint;
+    [HideInInspector] public int m_PlayerNumber;
     [HideInInspector] public string m_ColoredPlayerText;
-    [HideInInspector] public GameObject m_Instance;          
-    [HideInInspector] public int m_Wins;                     
+    [HideInInspector] public GameObject m_Instance;
+    [HideInInspector] public int m_Wins;
+    [HideInInspector] public List<GameObject> m_Soldiers;
 
 
     private TankMovement m_Movement;       
@@ -22,6 +24,7 @@ public class TankManager
         m_Movement = m_Instance.GetComponent<TankMovement>();
         m_Shooting = m_Instance.GetComponent<TankShooting>();
         m_CanvasGameObject = m_Instance.GetComponentInChildren<Canvas>().gameObject;
+        m_Soldiers = new List<GameObject>();
 
         m_Movement.m_PlayerNumber = m_PlayerNumber;
         m_Shooting.m_PlayerNumber = m_PlayerNumber;
@@ -35,7 +38,6 @@ public class TankManager
             renderers[i].material.color = m_PlayerColor;
         }
     }
-
 
     public void DisableControl()
     {

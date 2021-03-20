@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public Text m_MessageText;
     public GameObject m_TankPrefab;
     public TankManager[] m_Tanks;
+    public GameObject[] m_SoldierPrefabs;
 
     public Canvas m_MessageScreen;
     public Canvas m_SettingsScreen;
@@ -31,11 +32,20 @@ public class GameManager : MonoBehaviour
     {
         m_StartWait = new WaitForSeconds (m_StartDelay);
         m_EndWait = new WaitForSeconds (m_EndDelay);
+        m_SoldierPrefabs[0].GetComponent<AgentBrain>().m_GameManager = this;
 
         m_MessageScreen.enabled = false;
         m_SettingsScreen.enabled = false;
         m_StartButton.onClick.AddListener(StartGame);
         m_QuitButton.onClick.AddListener(QuitGame);
+    }
+
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.R)) {
+            GameObject soldier = Instantiate(m_SoldierPrefabs[0], m_Tanks[0].m_Instance.transform.position, Quaternion.identity) as GameObject;
+            soldier.GetComponent<AgentBrain>().Owner = 1;
+            m_Tanks[0].m_Soldiers.Add(soldier);
+        }
     }
 
     private void QuitGame() {
@@ -205,10 +215,14 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < m_Tanks.Length; i++)
         {
+            while (m_Tanks[i].m_Soldiers.Count != 0) {
+                Destroy(m_Tanks[i].m_Soldiers[0]);
+                m_Tanks[i].m_Soldiers.RemoveAt(0);
+            }
+
             m_Tanks[i].Reset();
         }
     }
-
 
     private void EnableTankControl()
     {

@@ -5,8 +5,8 @@ using UnityEngine.AI;
 
 public class AgentBrain : MonoBehaviour
 {
-    public GameManager target;
-
+    public int Owner;
+    public GameManager m_GameManager;
     private NavMeshAgent agent;
 
     void Start()
@@ -16,15 +16,17 @@ public class AgentBrain : MonoBehaviour
 
     void Update()
     {
-        if (target.m_Tanks[0].m_Instance != null) {
+        if (m_GameManager.m_Tanks[0].m_Instance != null) {
             GameObject closest = null;
             float d = float.MaxValue;
             for (int i = 0; i < 2; i++) {
-                Vector3 toTarget = target.m_Tanks[i].m_Instance.transform.position - transform.position;
-                float toTargetDistance = toTarget.magnitude;
-                if (toTargetDistance < d) {
-                    closest = target.m_Tanks[i].m_Instance;
-                    d = toTargetDistance;
+                if (i != Owner-1) {
+                    Vector3 toTarget = m_GameManager.m_Tanks[i].m_Instance.transform.position - transform.position;
+                    float toTargetDistance = toTarget.magnitude;
+                    if (toTargetDistance < d) {
+                        closest = m_GameManager.m_Tanks[i].m_Instance;
+                        d = toTargetDistance;
+                    }
                 }
             }
 

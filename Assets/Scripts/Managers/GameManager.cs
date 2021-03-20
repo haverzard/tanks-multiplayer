@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -42,9 +43,17 @@ public class GameManager : MonoBehaviour
 
     private void Update() {
         if (Input.GetKeyDown(KeyCode.R)) {
-            GameObject soldier = Instantiate(m_SoldierPrefabs[0], m_Tanks[0].m_Instance.transform.position, Quaternion.identity) as GameObject;
-            soldier.GetComponent<AgentBrain>().Owner = 1;
-            m_Tanks[0].m_Soldiers.Add(soldier);
+            GameObject soldier = m_Tanks[0].GetAvailablePool();
+            if (soldier) {
+                soldier.transform.position = m_Tanks[0].m_Instance.transform.position;
+                soldier.SetActive(true);
+            }
+        } else if (Input.GetKeyDown(KeyCode.T)) {
+            GameObject soldier = m_Tanks[1].GetAvailablePool();
+            if (soldier) {
+                soldier.transform.position = m_Tanks[1].m_Instance.transform.position;
+                soldier.SetActive(true);
+            }
         }
     }
 
@@ -71,6 +80,12 @@ public class GameManager : MonoBehaviour
                 Instantiate(m_TankPrefab, m_Tanks[i].m_SpawnPoint.position, m_Tanks[i].m_SpawnPoint.rotation) as GameObject;
             m_Tanks[i].m_PlayerNumber = i + 1;
             m_Tanks[i].Setup();
+            for (int j = 0; j < m_Tanks[i].m_PoolSize; j++) {
+                m_Tanks[i].m_Soldiers.Add(null);
+                m_Tanks[i].m_Soldiers[j] = Instantiate(m_SoldierPrefabs[0], new Vector3(0,0,0), Quaternion.identity) as GameObject;
+                m_Tanks[i].m_Soldiers[j].GetComponent<AgentBrain>().Owner = i+1;
+                m_Tanks[i].m_Soldiers[j].SetActive(false);
+            }
         }
     }
 
@@ -215,9 +230,8 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < m_Tanks.Length; i++)
         {
-            while (m_Tanks[i].m_Soldiers.Count != 0) {
-                Destroy(m_Tanks[i].m_Soldiers[0]);
-                m_Tanks[i].m_Soldiers.RemoveAt(0);
+            for (int j = 0; j < m_Tanks[i].m_PoolSize; j++) {
+                m_Tanks[i].m_Soldiers[j].SetActive(false);
             }
 
             m_Tanks[i].Reset();

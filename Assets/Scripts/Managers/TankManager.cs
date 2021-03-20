@@ -7,6 +7,7 @@ public class TankManager
 {
     public Color m_PlayerColor;
     public Transform m_SpawnPoint;
+    public int m_PoolSize = 20;
     [HideInInspector] public int m_PlayerNumber;
     [HideInInspector] public string m_ColoredPlayerText;
     [HideInInspector] public GameObject m_Instance;
@@ -47,6 +48,13 @@ public class TankManager
         m_CanvasGameObject.SetActive(false);
     }
 
+    public GameObject GetAvailablePool() {
+        for (int i = 0; i < m_Soldiers.Count; i++) {
+            if (m_Soldiers[i].activeSelf) continue;
+            return m_Soldiers[i];
+        }
+        return null;
+    }
 
     public void EnableControl()
     {
@@ -62,7 +70,6 @@ public class TankManager
         m_Instance.transform.position = m_SpawnPoint.position;
         m_Instance.transform.rotation = m_SpawnPoint.rotation;
 
-        m_Instance.SetActive(false);
         m_Instance.SetActive(true);
     }
 }

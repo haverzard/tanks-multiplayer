@@ -69,7 +69,7 @@ public class AgentHealth : MonoBehaviour
         // m_ExplosionParticles.Play();
 
         // m_ExplosionAudio.Play();
-        // gameObject.SetActive(false);
-        Destroy(gameObject);
+        gameObject.SetActive(false);
+        // Destroy(gameObject);
     }
 }

@@ -10,67 +10,28 @@ public class AgentShooting : MonoBehaviour
     // public AudioSource m_ShootingAudio;  
     // public AudioClip m_ChargingClip;     
     // public AudioClip m_FireClip;
-    public float m_MinLaunchForce = 15f; 
-    public float m_MaxLaunchForce = 30f; 
     public float m_MaxChargeTime = 0.75f;
     public LayerMask m_TankMask;
 
     private int Owner;    
-    private string m_FireButton;         
     private float m_CurrentLaunchForce;  
-    private float m_ChargeSpeed;         
-    private bool m_Fired;
-
 
     private void OnEnable()
     {
-        m_CurrentLaunchForce = m_MinLaunchForce;
-        // m_AimSlider.value = m_MinLaunchForce;
+        m_CurrentLaunchForce = 20f;
+
+        StartCoroutine(FireLoop());
     }
 
 
     private void Start()
     {
-        m_FireButton = "Fire" + m_PlayerNumber;
         Owner = GetComponent<AgentBrain>().Owner;
-
-        m_ChargeSpeed = (m_MaxLaunchForce - m_MinLaunchForce) / m_MaxChargeTime;
-        StartCoroutine(FireLoop());
     }
     
 
     private void Update()
     {
-        // // Track the current state of the fire button and make decisions based on the current launch force.
-        // m_AimSlider.value = m_MinLaunchForce;
-        
-        // if (m_CurrentLaunchForce >= m_MaxLaunchForce && !m_Fired)
-        // {
-        //     // at mac charge, not fired
-        //     m_CurrentLaunchForce = m_MaxLaunchForce;
-        //     Fire();
-        // }
-        // else if (Input.GetButtonDown(m_FireButton))
-        // {
-        //     // have we pressed fire for the first time?
-        //     m_Fired = false;
-        //     m_CurrentLaunchForce = m_MinLaunchForce;
-
-        //     m_ShootingAudio.clip = m_ChargingClip;
-        //     m_ShootingAudio.Play();
-        // }
-        // else if (Input.GetButton(m_FireButton) && !m_Fired)
-        // {
-        //     //Holding the fire button, not yet fired
-        //     m_CurrentLaunchForce += m_ChargeSpeed * Time.deltaTime;
-
-        //     m_AimSlider.value = m_CurrentLaunchForce;
-        // }
-        // else if (Input.GetButtonUp(m_FireButton) && !m_Fired)
-        // {
-        //     // we released the button, having not fired yet
-        //     Fire();
-        // }
     }
 
     private IEnumerator FireLoop() {
@@ -82,14 +43,18 @@ public class AgentShooting : MonoBehaviour
             if (!targetRigidbody) continue;
             
             TankHealth tankHealth = targetRigidbody.GetComponent<TankHealth>();
-            if (!tankHealth)
+            AgentHealth agentHealth = targetRigidbody.GetComponent<AgentHealth>();
+
+            if (!tankHealth && !agentHealth)
                 continue;
             
-            if (targetRigidbody.GetComponent<TankMovement>().m_PlayerNumber == Owner)
+            if (tankHealth != null && targetRigidbody.GetComponent<TankMovement>().m_PlayerNumber == Owner)
+                continue;
+
+            if (agentHealth != null && targetRigidbody.GetComponent<AgentBrain>().Owner == Owner)
                 continue;
 
             transform.LookAt(targetRigidbody.GetComponent<Transform>());
-            m_CurrentLaunchForce = 20f;
             Fire();
             break;
         }
@@ -98,9 +63,6 @@ public class AgentShooting : MonoBehaviour
 
     private void Fire()
     {
-        // Instantiate and launch the shell.
-        m_Fired = true;
-
         Rigidbody shellInstance = Instantiate(m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
         Transform shellTransform = shellInstance.GetComponent<Transform>();
         shellTransform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
@@ -116,14 +78,9 @@ public class AgentShooting : MonoBehaviour
             var main = ps.main;
             main.scalingMode = ParticleSystemScalingMode.Local;
             ps.transform.localScale = new Vector3(scale, scale, scale);
-            ps.maxParticles = 20;
+            main.maxParticles = 20;
         }
 
         shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward;
-
-        // m_ShootingAudio.clip = m_FireClip;
-        // m_ShootingAudio.Play();
-
-        m_CurrentLaunchForce = m_MinLaunchForce;
     }
 }

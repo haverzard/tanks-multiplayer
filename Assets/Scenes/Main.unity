@@ -122,6 +122,12 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 23800000, guid: 0cde6f7e88a48264eb66d6e0d05ecc01, type: 2}
+--- !u!4 &111098899 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 479343117, guid: dee2dca2489dab8489dfc31e91d37445,
+    type: 3}
+  m_PrefabInstance: {fileID: 3802203872515432178}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &169300123
 GameObject:
   m_ObjectHideFlags: 0
@@ -3790,11 +3796,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 479343117, guid: dee2dca2489dab8489dfc31e91d37445, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.1
       objectReference: {fileID: 0}
     - target: {fileID: 479343117, guid: dee2dca2489dab8489dfc31e91d37445, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 1984105685, guid: dee2dca2489dab8489dfc31e91d37445, type: 3}
       propertyPath: m_AnchorMax.x
@@ -3805,8 +3811,21 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1981861075875101, guid: dee2dca2489dab8489dfc31e91d37445, type: 3}
+      propertyPath: m_Shell
+      value: 
+      objectReference: {fileID: 4647003850566498865, guid: 7c746997fb2f3b44e830d8ae6a714079,
+        type: 3}
+    - target: {fileID: 1981861075875101, guid: dee2dca2489dab8489dfc31e91d37445, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1981861075875101, guid: dee2dca2489dab8489dfc31e91d37445, type: 3}
+      propertyPath: m_FireTransform
+      value: 
+      objectReference: {fileID: 111098899}
+    - target: {fileID: 1981861075875101, guid: dee2dca2489dab8489dfc31e91d37445, type: 3}
+      propertyPath: m_TankMask.m_Bits
+      value: 512
       objectReference: {fileID: 0}
     - target: {fileID: 1981861075875102, guid: dee2dca2489dab8489dfc31e91d37445, type: 3}
       propertyPath: m_Slider

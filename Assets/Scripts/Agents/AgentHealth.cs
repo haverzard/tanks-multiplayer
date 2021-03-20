@@ -3,12 +3,12 @@ using UnityEngine.UI;
 
 public class AgentHealth : MonoBehaviour
 {
-    public float m_StartingHealth = 100f;          
-    public Slider m_Slider;                        
-    public Image m_FillImage;                      
-    public Color m_FullHealthColor = Color.green;  
-    public Color m_ZeroHealthColor = Color.red;    
-    // public GameObject m_ExplosionPrefab;
+    public float m_StartingHealth = 40f;
+    public Slider m_Slider;
+    public Image m_FillImage;
+    public Color m_FullHealthColor = Color.green;
+    public Color m_ZeroHealthColor = Color.red;
+    public LayerMask m_TankMask;
     
     
     // private AudioSource m_ExplosionAudio;          
@@ -52,7 +52,7 @@ public class AgentHealth : MonoBehaviour
     private void SetHealthUI()
     {
         // Adjust the value and colour of the slider.
-        m_Slider.value = m_CurrentHealth;
+        m_Slider.value = m_CurrentHealth * 2.5f;
 
         m_FillImage.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
     }

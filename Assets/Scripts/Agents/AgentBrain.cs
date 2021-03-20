@@ -8,12 +8,10 @@ public class AgentBrain : MonoBehaviour
     public GameManager target;
 
     private NavMeshAgent agent;
-    private Transform transform;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        transform = GetComponent<Transform>();
     }
 
     void Update()

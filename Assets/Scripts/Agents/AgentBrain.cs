@@ -8,10 +8,12 @@ public class AgentBrain : MonoBehaviour
     public int Owner;
     public GameManager m_GameManager;
     private NavMeshAgent agent;
+    private Animator anim;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        anim = GetComponent<Animator>();
     }
 
     void Update()
@@ -43,8 +45,13 @@ public class AgentBrain : MonoBehaviour
             }
 
             if (closest && d >= 10f) {
+                anim.SetBool("Moving", true);
                 agent.SetDestination(closest.transform.position);
             } else {
+                if (closest) {
+                    transform.LookAt(closest.transform.position);
+                }
+                anim.SetBool("Moving", false);
                 agent.SetDestination(transform.position);
             }
         }

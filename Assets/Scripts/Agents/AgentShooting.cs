@@ -15,10 +15,12 @@ public class AgentShooting : MonoBehaviour
 
     private int Owner;    
     private float m_CurrentLaunchForce;  
+    private Animator anim;
 
     private void OnEnable()
     {
         m_CurrentLaunchForce = 20f;
+        anim = GetComponent<Animator>();
 
         StartCoroutine(FireLoop());
     }
@@ -36,6 +38,7 @@ public class AgentShooting : MonoBehaviour
 
     private IEnumerator FireLoop() {
         yield return new WaitForSeconds(1f);
+        anim.SetBool("Shooting", false);
         Collider[] colliders = Physics.OverlapSphere(transform.position, 10f, m_TankMask);
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -63,6 +66,7 @@ public class AgentShooting : MonoBehaviour
 
     private void Fire()
     {
+        anim.SetBool("Shooting", true);
         Rigidbody shellInstance = Instantiate(m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
         Transform shellTransform = shellInstance.GetComponent<Transform>();
         shellTransform.localScale = new Vector3(0.3f, 0.3f, 0.3f);

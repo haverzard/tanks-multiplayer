@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class AgentShooting : MonoBehaviour
+public class AgentExploding : MonoBehaviour
 {
     public Rigidbody m_Shell;            
     public Transform m_FireTransform;    
@@ -10,6 +10,7 @@ public class AgentShooting : MonoBehaviour
     // public AudioClip m_ChargingClip;     
     // public AudioClip m_FireClip;
     public float m_MaxChargeTime = 0.75f;
+    public float m_TargetingRadius = 1.5f;
     public LayerMask m_TankMask;
 
     private int owner;    
@@ -18,7 +19,7 @@ public class AgentShooting : MonoBehaviour
 
     private void OnEnable()
     {
-        m_CurrentLaunchForce = 20f;
+        m_CurrentLaunchForce = 0f;
         anim = GetComponent<Animator>();
 
         StartCoroutine(FireLoop());
@@ -36,9 +37,9 @@ public class AgentShooting : MonoBehaviour
     }
 
     private IEnumerator FireLoop() {
-        yield return new WaitForSeconds(1f);
-        anim.SetBool("Shooting", false);
-        Collider[] colliders = Physics.OverlapSphere(transform.position, 10f, m_TankMask);
+        bool repeat = true;
+        yield return new WaitForSeconds(0.1f);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, m_TargetingRadius, m_TankMask);
         for (int i = 0; i < colliders.Length; i++)
         {
             Rigidbody targetRigidbody = colliders[i].GetComponent<Rigidbody>();
@@ -58,31 +59,33 @@ public class AgentShooting : MonoBehaviour
 
             transform.LookAt(targetRigidbody.GetComponent<Transform>());
             Fire();
+            repeat = false;
             break;
         }
-        StartCoroutine(FireLoop());
+        if (repeat) {
+            StartCoroutine(FireLoop());
+        }
     }
 
     private void Fire()
     {
-        anim.SetBool("Shooting", true);
         Rigidbody shellInstance = Instantiate(m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
-        Transform shellTransform = shellInstance.GetComponent<Transform>();
-        shellTransform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
-        ShellExplosion shellExp = shellInstance.GetComponent<ShellExplosion>();
-        shellExp.m_MaxDamage = 20f;
-        shellExp.m_ExplosionRadius = 2f;
-        shellExp.m_ExplosionForce = 200f;
+        // Transform shellTransform = shellInstance.GetComponent<Transform>();
+        // shellTransform.localScale = new Vector3(0.5f, 0.3f, 0.3f);
+        // ShellExplosion shellExp = shellInstance.GetComponent<ShellExplosion>();
+        // shellExp.m_MaxDamage = 50f;
+        // shellExp.m_ExplosionRadius = 2f;
+        // shellExp.m_ExplosionForce = 1000f;
 
-        float scale = 0.5f;
-        ParticleSystem[] psys = shellExp.m_ExplosionParticles.GetComponentsInChildren<ParticleSystem>();
-        foreach (var ps in psys)
-        {
-            var main = ps.main;
-            main.scalingMode = ParticleSystemScalingMode.Local;
-            ps.transform.localScale = new Vector3(scale, scale, scale);
-            main.maxParticles = 20;
-        }
+        // float scale = 0.5f;
+        // ParticleSystem[] psys = shellExp.m_ExplosionParticles.GetComponentsInChildren<ParticleSystem>();
+        // foreach (var ps in psys)
+        // {
+        //     var main = ps.main;
+        //     main.scalingMode = ParticleSystemScalingMode.Local;
+        //     ps.transform.localScale = new Vector3(scale, scale, scale);
+        //     main.maxParticles = 20;
+        // }
 
         shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward;
     }

@@ -70,6 +70,12 @@ public class AgentHealth : MonoBehaviour
 
         // m_ExplosionAudio.Play();
         gameObject.SetActive(false);
-        m_InGameManager.RemoveInfantry(GetComponent<AgentBrain>().owner-1);
+        string type = GetComponent<AgentBrain>().type;
+        int owner = GetComponent<AgentBrain>().owner;
+        if (type == "infantry") {
+            m_InGameManager.RemoveInfantry(owner-1);
+        } else if (type == "bomber") {
+            m_InGameManager.RemoveBomber(owner-1);
+        }
     }
 }

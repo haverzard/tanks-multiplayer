@@ -5,46 +5,55 @@ using UnityEngine.AI;
 
 public class AgentBrain : MonoBehaviour
 {
-    public int owner;
     public GameManager m_GameManager;
+    [HideInInspector] public int owner;
+    [HideInInspector] public string type;
+    [HideInInspector] public float minDistance;
+
     private NavMeshAgent agent;
     private Animator anim;
 
-    void Start()
+    private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
     }
 
-    void Update()
+    private void Update()
     {
         if (m_GameManager.m_Tanks[0].m_Instance != null) {
             GameObject closest = null;
             float d = float.MaxValue;
-            for (int i = 0; i < 2; i++) {
-                TankManager tank = m_GameManager.m_Tanks[i];
+            for (int i = 0; i < m_GameManager.m_Tanks.Length; i++) {
+                TankManager tm = m_GameManager.m_Tanks[i];
                 if (i != owner-1) {
-                    Vector3 toTarget = tank.m_Instance.transform.position - transform.position;
-                    float toTargetDistance = toTarget.magnitude;
+                    // check tank
+                    float toTargetDistance = toTarget(tm.m_Instance);
                     if (toTargetDistance < d) {
-                        closest = tank.m_Instance;
+                        closest = tm.m_Instance;
                         d = toTargetDistance;
                     }
-                }
-                if (i != owner-1) {
-                    for (int j = 0; j < tank.m_Soldiers.Count; j++) {
-                        if (!tank.m_Soldiers[j].activeSelf) continue;
-                        Vector3 toTarget = tank.m_Soldiers[j].transform.position - transform.position;
-                        float toTargetDistance = toTarget.magnitude;
+                    // check soldiers
+                    for (int j = 0; j < tm.m_Infantries.Count; j++) {
+                        if (!tm.m_Infantries[j].activeSelf) continue;
+                        toTargetDistance = toTarget(tm.m_Infantries[j]);
                         if (toTargetDistance < d) {
-                            closest = tank.m_Soldiers[j];
+                            closest = tm.m_Infantries[j];
+                            d = toTargetDistance;
+                        }
+                    }
+                    for (int j = 0; j < tm.m_Bombers.Count; j++) {
+                        if (!tm.m_Bombers[j].activeSelf) continue;
+                        toTargetDistance = toTarget(tm.m_Bombers[j]);
+                        if (toTargetDistance < d) {
+                            closest = tm.m_Bombers[j];
                             d = toTargetDistance;
                         }
                     }
                 }
             }
 
-            if (closest && d >= 10f) {
+            if (closest && d >= minDistance) {
                 anim.SetBool("Moving", true);
                 agent.SetDestination(closest.transform.position);
             } else {
@@ -56,4 +65,9 @@ public class AgentBrain : MonoBehaviour
             }
         }
     }
+    
+    private float toTarget(GameObject obj) {
+        Vector3 toTarget = obj.transform.position - transform.position;
+        return toTarget.magnitude;
+    } 
 }

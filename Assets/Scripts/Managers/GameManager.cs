@@ -34,9 +34,9 @@ public class GameManager : MonoBehaviour
     {
         m_StartWait = new WaitForSeconds (m_StartDelay);
         m_EndWait = new WaitForSeconds (m_EndDelay);
-        m_SoldierPrefabs[0].GetComponent<AgentBrain>().m_GameManager = this;
-        m_SoldierPrefabs[0].GetComponent<AgentHealth>().m_InGameManager = m_InGameManager;
         m_InGameManager.gameObject.SetActive(false);
+
+        initSoldiers();
 
         m_MessageScreen.enabled = false;
         m_SettingsScreen.enabled = false;
@@ -62,6 +62,21 @@ public class GameManager : MonoBehaviour
         StartCoroutine(GameLoop());
     }
 
+    private void initSoldiers() {
+        for (int i = 0; i < m_SoldierPrefabs.Length; i++) {
+            m_SoldierPrefabs[i].GetComponent<AgentHealth>().m_InGameManager = m_InGameManager;
+            m_SoldierPrefabs[i].GetComponent<AgentBrain>().m_GameManager = this;
+        }
+
+        AgentBrain ab1 = m_SoldierPrefabs[0].GetComponent<AgentBrain>();
+        ab1.minDistance = 10f;
+        ab1.type = "infantry";
+
+        AgentBrain ab2 = m_SoldierPrefabs[1].GetComponent<AgentBrain>();
+        ab2.minDistance = 0f;
+        ab2.type = "bomber";
+    }
+
     private void SpawnAllTanks()
     {
         for (int i = 0; i < m_Tanks.Length; i++)
@@ -70,11 +85,20 @@ public class GameManager : MonoBehaviour
                 Instantiate(m_TankPrefab, m_Tanks[i].m_SpawnPoint.position, m_Tanks[i].m_SpawnPoint.rotation) as GameObject;
             m_Tanks[i].m_PlayerNumber = i + 1;
             m_Tanks[i].Setup();
-            for (int j = 0; j < m_Tanks[i].m_PoolSize; j++) {
-                m_Tanks[i].m_Soldiers.Add(null);
-                m_Tanks[i].m_Soldiers[j] = Instantiate(m_SoldierPrefabs[0], new Vector3(0,0,0), Quaternion.identity) as GameObject;
-                m_Tanks[i].m_Soldiers[j].GetComponent<AgentBrain>().owner = i+1;
-                m_Tanks[i].m_Soldiers[j].SetActive(false);
+
+            // init characters' pooling
+            TankManager tm = m_Tanks[i];
+            for (int j = 0; j < tm.m_InfantryPoolSize; j++) {
+                tm.m_Infantries.Add(null);
+                tm.m_Infantries[j] = Instantiate(m_SoldierPrefabs[0], new Vector3(0,0,0), Quaternion.identity) as GameObject;
+                tm.m_Infantries[j].GetComponent<AgentBrain>().owner = i + 1;
+                tm.m_Infantries[j].SetActive(false);
+            }
+            for (int j = 0; j < tm.m_BomberPoolSize; j++) {
+                tm.m_Bombers.Add(null);
+                tm.m_Bombers[j] = Instantiate(m_SoldierPrefabs[1], new Vector3(0,0,0), Quaternion.identity) as GameObject;
+                tm.m_Bombers[j].GetComponent<AgentBrain>().owner = i + 1;
+                tm.m_Bombers[j].SetActive(false);
             }
         }
     }
@@ -241,10 +265,6 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < m_Tanks.Length; i++)
         {
-            for (int j = 0; j < m_Tanks[i].m_PoolSize; j++) {
-                m_Tanks[i].m_Soldiers[j].SetActive(false);
-            }
-
             m_Tanks[i].DisableControl();
         }
     }

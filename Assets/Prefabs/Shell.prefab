@@ -300,9 +300,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1466199610982434295}
     m_Modifications:
+    - target: {fileID: 113952, guid: 89e78efe92dfe5a42837b392cdb0bf9e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 195792, guid: 89e78efe92dfe5a42837b392cdb0bf9e, type: 3}
       propertyPath: m_Name
       value: ShellExplosion
+      objectReference: {fileID: 0}
+    - target: {fileID: 199372, guid: 89e78efe92dfe5a42837b392cdb0bf9e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 486730, guid: 89e78efe92dfe5a42837b392cdb0bf9e, type: 3}
       propertyPath: m_RootOrder

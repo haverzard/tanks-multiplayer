@@ -9,7 +9,7 @@ public class AgentHealth : MonoBehaviour
     public Color m_FullHealthColor = Color.green;
     public Color m_ZeroHealthColor = Color.red;
     public LayerMask m_TankMask;
-    
+    public InGameManager m_InGameManager;
     
     // private AudioSource m_ExplosionAudio;          
     // private ParticleSystem m_ExplosionParticles;   
@@ -70,6 +70,6 @@ public class AgentHealth : MonoBehaviour
 
         // m_ExplosionAudio.Play();
         gameObject.SetActive(false);
-        // Destroy(gameObject);
+        m_InGameManager.RemoveInfantry(GetComponent<AgentBrain>().owner-1);
     }
 }

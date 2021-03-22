@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public GameObject m_TankPrefab;
     public TankManager[] m_Tanks;
     public GameObject[] m_SoldierPrefabs;
+    public InGameManager m_InGameManager;
 
     public Canvas m_MessageScreen;
     public Canvas m_SettingsScreen;
@@ -34,6 +35,8 @@ public class GameManager : MonoBehaviour
         m_StartWait = new WaitForSeconds (m_StartDelay);
         m_EndWait = new WaitForSeconds (m_EndDelay);
         m_SoldierPrefabs[0].GetComponent<AgentBrain>().m_GameManager = this;
+        m_SoldierPrefabs[0].GetComponent<AgentHealth>().m_InGameManager = m_InGameManager;
+        m_InGameManager.gameObject.SetActive(false);
 
         m_MessageScreen.enabled = false;
         m_SettingsScreen.enabled = false;
@@ -42,19 +45,6 @@ public class GameManager : MonoBehaviour
     }
 
     private void Update() {
-        if (Input.GetKeyDown(KeyCode.R)) {
-            GameObject soldier = m_Tanks[0].GetAvailablePool();
-            if (soldier) {
-                soldier.transform.position = m_Tanks[0].m_Instance.transform.position;
-                soldier.SetActive(true);
-            }
-        } else if (Input.GetKeyDown(KeyCode.T)) {
-            GameObject soldier = m_Tanks[1].GetAvailablePool();
-            if (soldier) {
-                soldier.transform.position = m_Tanks[1].m_Instance.transform.position;
-                soldier.SetActive(true);
-            }
-        }
     }
 
     private void QuitGame() {
@@ -83,7 +73,7 @@ public class GameManager : MonoBehaviour
             for (int j = 0; j < m_Tanks[i].m_PoolSize; j++) {
                 m_Tanks[i].m_Soldiers.Add(null);
                 m_Tanks[i].m_Soldiers[j] = Instantiate(m_SoldierPrefabs[0], new Vector3(0,0,0), Quaternion.identity) as GameObject;
-                m_Tanks[i].m_Soldiers[j].GetComponent<AgentBrain>().Owner = i+1;
+                m_Tanks[i].m_Soldiers[j].GetComponent<AgentBrain>().owner = i+1;
                 m_Tanks[i].m_Soldiers[j].SetActive(false);
             }
         }
@@ -125,6 +115,8 @@ public class GameManager : MonoBehaviour
         ResetAllTanks();
         DisableTankControl();
 
+        m_InGameManager.gameObject.SetActive(false);
+
         m_CameraControl.SetStartPositionAndSize();
 
         m_RoundNumber++;
@@ -137,6 +129,8 @@ public class GameManager : MonoBehaviour
     private IEnumerator RoundPlaying()
     {
         EnableTankControl();
+
+        m_InGameManager.gameObject.SetActive(true);
 
         m_MessageText.text = string.Empty;
 

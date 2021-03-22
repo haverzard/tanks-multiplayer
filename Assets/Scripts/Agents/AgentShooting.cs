@@ -13,7 +13,7 @@ public class AgentShooting : MonoBehaviour
     public float m_MaxChargeTime = 0.75f;
     public LayerMask m_TankMask;
 
-    private int Owner;    
+    private int owner;    
     private float m_CurrentLaunchForce;  
     private Animator anim;
 
@@ -28,7 +28,7 @@ public class AgentShooting : MonoBehaviour
 
     private void Start()
     {
-        Owner = GetComponent<AgentBrain>().Owner;
+        owner = GetComponent<AgentBrain>().owner;
     }
     
 
@@ -51,10 +51,10 @@ public class AgentShooting : MonoBehaviour
             if (!tankHealth && !agentHealth)
                 continue;
             
-            if (tankHealth != null && targetRigidbody.GetComponent<TankMovement>().m_PlayerNumber == Owner)
+            if (tankHealth != null && targetRigidbody.GetComponent<TankMovement>().m_PlayerNumber == owner)
                 continue;
 
-            if (agentHealth != null && targetRigidbody.GetComponent<AgentBrain>().Owner == Owner)
+            if (agentHealth != null && targetRigidbody.GetComponent<AgentBrain>().owner == owner)
                 continue;
 
             transform.LookAt(targetRigidbody.GetComponent<Transform>());

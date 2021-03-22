@@ -31,6 +31,7 @@ public class InGameManager : MonoBehaviour
         for (int i = 0; i < numberOfPlayers; i++) {
             infantryCounts[i] = 0;
             bombCounts[i] = 0;
+            UpdateUI(i);
         }
         if (numberOfPlayers == 1) {
             m_InfantryCounter[1].enabled = false;
@@ -66,6 +67,6 @@ public class InGameManager : MonoBehaviour
 
     public void UpdateUI(int player) {
         m_InfantryCounter[player].text = infantryCounts[player]+" / 20";
-        m_BombCounter[player].text = bombCounts[player]+" / 20";
+        m_BombCounter[player].text = bombCounts[player]+" / 10";
     }
 }

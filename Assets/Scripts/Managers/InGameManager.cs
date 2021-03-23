@@ -45,10 +45,23 @@ public class InGameManager : MonoBehaviour
             this.AddInfantry(0);
         } else if (Input.GetKeyDown(KeyCode.F)) {
             this.AddBomber(0);
-        } else if (Input.GetKeyDown(KeyCode.T) && numberOfPlayers == 2) {
+        } else if (Input.GetKeyDown(KeyCode.Slash) && numberOfPlayers == 2) {
             this.AddInfantry(1);
+        } else if (Input.GetKeyDown(KeyCode.Period) && numberOfPlayers == 2) {
+            this.AddBomber(1);
+        } else if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            this.SetWeapon(0, "bazooka");
+        } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+            this.SetWeapon(0, "shotgun");
+        } else if (Input.GetKeyDown(KeyCode.Alpha3)) {
+            this.SetWeapon(0, "airstrike");
+        } else if (Input.GetKeyDown(KeyCode.Keypad1) && numberOfPlayers == 2) {
+            this.SetWeapon(1, "bazooka");
+        } else if (Input.GetKeyDown(KeyCode.Keypad2) && numberOfPlayers == 2) {
+            this.SetWeapon(1, "shotgun");
+        } else if (Input.GetKeyDown(KeyCode.Keypad3) && numberOfPlayers == 2) {
+            this.SetWeapon(1, "airstrike");
         }
-
     }
 
     public void AddInfantry(int player) {
@@ -69,6 +82,10 @@ public class InGameManager : MonoBehaviour
             bomberCounts[player]++;
             UpdateUI(player);
         }
+    }
+
+    public void SetWeapon(int player, string weapon) {
+        m_GameManager.m_Tanks[player].m_Instance.GetComponent<TankShooting>().m_Weapon = weapon;
     }
 
     public void RemoveInfantry(int player) {

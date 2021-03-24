@@ -6,15 +6,17 @@ using UnityEngine;
 public class TankManager
 {
     public Color m_PlayerColor;
-    public Transform m_SpawnPoint;
+    public Transform[] m_SpawnPoints;
     public int m_InfantryPoolSize = 20;
     public int m_BomberPoolSize = 10;
     [HideInInspector] public int m_PlayerNumber;
     [HideInInspector] public string m_ColoredPlayerText;
     [HideInInspector] public GameObject m_Instance;
     [HideInInspector] public int m_Wins;
+    [HideInInspector] public int m_MapIdx;
     [HideInInspector] public List<GameObject> m_Infantries;
     [HideInInspector] public List<GameObject> m_Bombers;
+    [HideInInspector] public Transform m_SpawnPoint;
 
 
     private TankMovement m_Movement;       
@@ -29,6 +31,7 @@ public class TankManager
         m_CanvasGameObject = m_Instance.GetComponentInChildren<Canvas>().gameObject;
         m_Infantries = new List<GameObject>();
         m_Bombers = new List<GameObject>();
+        m_SpawnPoint = m_SpawnPoints[m_MapIdx];
 
         m_Movement.m_PlayerNumber = m_PlayerNumber;
         m_Shooting.m_PlayerNumber = m_PlayerNumber;

@@ -1043,7 +1043,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_PlayerNumber: 1
-  m_Shell: {fileID: 4647003850566498865, guid: 7c746997fb2f3b44e830d8ae6a714079, type: 3}
+  m_Shell: {fileID: 1466199610982341079, guid: 7c746997fb2f3b44e830d8ae6a714079, type: 3}
   m_FireTransform: {fileID: 39266723847596382}
   m_AimSlider: {fileID: 2292580618968097511}
   m_ShootingAudio: {fileID: 4178925214152745809}
@@ -1052,6 +1052,7 @@ MonoBehaviour:
   m_MinLaunchForce: 15
   m_MaxLaunchForce: 30
   m_MaxChargeTime: 0.75
+  m_Weapon: bazooka
 --- !u!208 &-6923231779096215400
 NavMeshObstacle:
   m_ObjectHideFlags: 0

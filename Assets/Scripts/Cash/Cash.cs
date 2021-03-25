@@ -23,7 +23,7 @@ public class Cash : MonoBehaviour
         TankMovement tankMovement = obj.GetComponent<TankMovement>();
         if (!tankMovement)
             return;
-        m_GameManager.m_Tanks[tankMovement.m_PlayerNumber-1].m_Cash++;
+        m_GameManager.m_InGameManager.AddCash(tankMovement.m_PlayerNumber-1);
         gameObject.SetActive(false);
     }
 }

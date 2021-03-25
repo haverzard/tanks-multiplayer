@@ -12,7 +12,6 @@ public class TankManager
     [HideInInspector] public string m_ColoredPlayerText;
     [HideInInspector] public GameObject m_Instance;
     [HideInInspector] public int m_Wins;
-    [HideInInspector] public int m_Cash = 0;
     [HideInInspector] public List<GameObject> m_Infantries;
     [HideInInspector] public List<GameObject> m_Bombers;
     [HideInInspector] public Transform m_SpawnPoint;
@@ -21,7 +20,6 @@ public class TankManager
     private TankMovement m_Movement;       
     private TankShooting m_Shooting;
     private GameObject m_CanvasGameObject;
-
 
     public void Setup()
     {

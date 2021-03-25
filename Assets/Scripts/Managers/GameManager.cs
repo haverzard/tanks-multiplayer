@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviour
         m_EndWait = new WaitForSeconds (m_EndDelay);
         m_CashManager = GetComponent<CashManager>();
         m_InGameManager.gameObject.SetActive(false);
+        
         for (int i = 0; i < m_Maps.Length; i++) {
             m_Maps[i].Init();
             m_Maps[i].m_MapPrefab.SetActive(false);

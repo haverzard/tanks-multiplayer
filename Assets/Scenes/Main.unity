@@ -472,7 +472,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &171567641
 RectTransform:
   m_ObjectHideFlags: 0
@@ -843,7 +843,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -1041,7 +1041,7 @@ GameObject:
   - component: {fileID: 308773106}
   - component: {fileID: 308773105}
   m_Layer: 5
-  m_Name: CashCount
+  m_Name: CashCounter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2939,7 +2939,7 @@ GameObject:
   - component: {fileID: 979037544}
   - component: {fileID: 979037543}
   m_Layer: 5
-  m_Name: CashCount
+  m_Name: CashCounter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3430,7 +3430,7 @@ GameObject:
   - component: {fileID: 1140286460}
   - component: {fileID: 1140286459}
   m_Layer: 5
-  m_Name: Cash
+  m_Name: Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4587,7 +4587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -4877,7 +4877,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1515571252
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6369,7 +6369,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -6623,6 +6623,15 @@ MonoBehaviour:
   m_BomberCounter:
   - {fileID: 1702688686}
   - {fileID: 2115236595}
+  m_CashCounter:
+  - {fileID: 979037543}
+  - {fileID: 308773105}
+  m_InfoPanel: {fileID: 199650202}
+  m_HelpText: {fileID: 1515571253}
+  m_PriceText: {fileID: 171567642}
+  m_HelpButton: {fileID: 1429682653}
+  m_PriceButton: {fileID: 1857753473}
+  m_CloseButton: {fileID: 244465531}
   numberOfPlayers: 0
 --- !u!1 &1930063237
 GameObject:
@@ -6797,7 +6806,7 @@ GameObject:
   - component: {fileID: 2016116025}
   - component: {fileID: 2016116024}
   m_Layer: 5
-  m_Name: Cash
+  m_Name: Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

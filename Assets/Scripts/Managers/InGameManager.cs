@@ -10,6 +10,7 @@ public class InGameManager : MonoBehaviour
     public Text[] m_InfantryCounter;
     public Text[] m_BomberCounter;
     public Text[] m_CashCounter;
+    public int m_InitMoney = 5;
 
     public RectTransform m_InfoPanel;
     public Text m_HelpText;
@@ -37,7 +38,7 @@ public class InGameManager : MonoBehaviour
         for (int i = 0; i < numberOfPlayers; i++) {
             infantryCounts.Add(0);
             bomberCounts.Add(0);
-            cashCounts.Add(5);
+            cashCounts.Add(m_InitMoney);
             hasShotgun.Add(false);
             hasAirstrike.Add(false);
             UpdateUI(i);

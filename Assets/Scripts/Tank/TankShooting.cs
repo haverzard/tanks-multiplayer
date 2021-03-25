@@ -156,28 +156,34 @@ public class TankShooting : MonoBehaviour
             }
         } else if (m_Weapon == "shotgun") { 
             for (int i = -10; i <= 10; i += 2) {
-                Vector3 pos = m_FireTransform.localPosition;
-                pos.x += i / 10f;
-                pos.z += (10f - Math.Abs(i))/10f;
                 GameObject shellInstance = GetAvailablePool("shotgun");
-                shellInstance.transform.position = transform.TransformPoint(pos);
-                shellInstance.transform.rotation = m_FireTransform.rotation;
-                shellInstance.SetActive(true);
-                Vector3 dforward = m_FireTransform.forward;
-                dforward.y = -dforward.y;
-                shellInstance.GetComponent<Rigidbody>().velocity = m_CurrentLaunchForce * (Quaternion.Euler(0, i*5f, 0) * dforward);
+                if (shellInstance) {
+                    Vector3 pos = m_FireTransform.localPosition;
+                    pos.x += i / 10f;
+                    pos.z += (10f - Math.Abs(i))/10f;
+                    shellInstance.transform.position = transform.TransformPoint(pos);
+                    shellInstance.transform.rotation = m_FireTransform.rotation;
+                    shellInstance.SetActive(true);
+
+                    Vector3 dforward = m_FireTransform.forward;
+                    dforward.y = -dforward.y;
+                    shellInstance.GetComponent<Rigidbody>().velocity = m_CurrentLaunchForce * (Quaternion.Euler(0, i*5f, 0) * dforward);
+                }
             }
         } else if (m_Weapon == "airstrike") { 
             for (int i = -10; i <= 10; i += 2) {
-                Vector3 pos = m_FireTransform.localPosition;
-                pos.y -= 1;
-                pos.x += i / 5f;
-                pos.z += (10f - Math.Abs(i))/5f;
                 GameObject shellInstance = GetAvailablePool("airstrike");
-                shellInstance.transform.position = transform.TransformPoint(pos);
-                shellInstance.transform.rotation = m_FireTransform.rotation;
-                shellInstance.SetActive(true);
-                shellInstance.GetComponent<Rigidbody>().velocity = m_CurrentLaunchForce * m_FireTransform.forward;
+                if (shellInstance) {
+                    Vector3 pos = m_FireTransform.localPosition;
+                    pos.y -= 1;
+                    pos.x += i / 5f;
+                    pos.z += (10f - Math.Abs(i))/5f;
+                    shellInstance.transform.position = transform.TransformPoint(pos);
+                    shellInstance.transform.rotation = m_FireTransform.rotation;
+                    shellInstance.SetActive(true);
+
+                    shellInstance.GetComponent<Rigidbody>().velocity = m_CurrentLaunchForce * m_FireTransform.forward;
+                }
             }
         }
 

@@ -10,6 +10,13 @@ public class InGameManager : MonoBehaviour
     public Text[] m_InfantryCounter;
     public Text[] m_BomberCounter;
 
+    public RectTransform m_InfoPanel;
+    public Text m_HelpText;
+    public Text m_PriceText;
+    public Button m_HelpButton;
+    public Button m_PriceButton;
+    public Button m_CloseButton;
+
     [HideInInspector] public int numberOfPlayers;
 
     private List<int> infantryCounts;
@@ -24,6 +31,24 @@ public class InGameManager : MonoBehaviour
             infantryCounts.Add(0);
             bomberCounts.Add(0);
         }
+
+        // init info panel
+        m_InfoPanel.gameObject.SetActive(true);
+        m_HelpText.enabled = true;
+        m_PriceText.enabled = false;
+        m_HelpButton.onClick.AddListener(() => {
+            m_InfoPanel.gameObject.SetActive(true);
+            m_HelpText.enabled = true;
+            m_PriceText.enabled = false;
+        });
+        m_PriceButton.onClick.AddListener(() => {
+            m_InfoPanel.gameObject.SetActive(true);
+            m_PriceText.enabled = true;
+            m_HelpText.enabled = false;
+        });
+        m_CloseButton.onClick.AddListener(() => {
+            m_InfoPanel.gameObject.SetActive(false);
+        });
     }
 
     private void OnEnable() {

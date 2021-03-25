@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     public CameraControl m_CameraControl;
     public Text m_MessageText;
     public GameObject m_TankPrefab;
-    public GameObject[] m_Maps;
+    public MapManager[] m_Maps;
     public TankManager[] m_Tanks;
     public GameObject[] m_SoldierPrefabs;
     public InGameManager m_InGameManager;
@@ -23,7 +23,6 @@ public class GameManager : MonoBehaviour
     public Canvas m_MapScreen;
     public Button m_StartButton;
     public Button m_QuitButton;
-    public Button[] m_MapButtons;
 
 
     private int m_RoundNumber;
@@ -31,17 +30,20 @@ public class GameManager : MonoBehaviour
     private WaitForSeconds m_EndWait;
     private TankManager m_RoundWinner;
     private TankManager m_GameWinner;
+    private CashManager m_CashManager;
 
 
     private void Start()
     {
         m_StartWait = new WaitForSeconds (m_StartDelay);
         m_EndWait = new WaitForSeconds (m_EndDelay);
+        m_CashManager = GetComponent<CashManager>();
         m_InGameManager.gameObject.SetActive(false);
         for (int i = 0; i < m_Maps.Length; i++) {
-            m_Maps[i].SetActive(false);
+            m_Maps[i].Init();
+            m_Maps[i].m_MapPrefab.SetActive(false);
         }
-        m_Maps[0].SetActive(true);
+        m_Maps[0].m_MapPrefab.SetActive(true);
 
         initSoldiers();
 
@@ -51,10 +53,6 @@ public class GameManager : MonoBehaviour
 
         m_StartButton.onClick.AddListener(ChooseMap);
         m_QuitButton.onClick.AddListener(QuitGame);
-        for (int i = 0; i < m_MapButtons.Length; i++) {
-            int mapIdx = i;
-            m_MapButtons[i].onClick.AddListener(() => StartGame(mapIdx));
-        }
     }
 
     private void Update() {
@@ -72,13 +70,14 @@ public class GameManager : MonoBehaviour
         m_MapScreen.enabled = true;
     }
 
-    private void StartGame(int mapIdx) {
+    public void StartGame(int mapIdx) {
         m_MapScreen.enabled = false;
         m_MessageScreen.enabled = true;
 
-        m_Maps[0].SetActive(false);
-        Debug.Log(mapIdx);
-        m_Maps[mapIdx].SetActive(true);
+        m_CashManager.m_MapManager = m_Maps[mapIdx];
+
+        m_Maps[0].m_MapPrefab.SetActive(false);
+        m_Maps[mapIdx].m_MapPrefab.SetActive(true);
 
         SpawnAllTanks(mapIdx);
         SetCameraTargets();
@@ -105,9 +104,9 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < m_Tanks.Length; i++)
         {
             m_Tanks[i].m_Instance =
-                Instantiate(m_TankPrefab, m_Tanks[i].m_SpawnPoints[mapIdx].position, m_Tanks[i].m_SpawnPoints[mapIdx].rotation) as GameObject;
+                Instantiate(m_TankPrefab, m_Maps[mapIdx].m_SpawnPoints[i].position, m_Maps[mapIdx].m_SpawnPoints[i].rotation) as GameObject;
+            m_Tanks[i].m_SpawnPoint = m_Maps[mapIdx].m_SpawnPoints[i];
             m_Tanks[i].m_PlayerNumber = i + 1;
-            m_Tanks[i].m_MapIdx = mapIdx;
             m_Tanks[i].Setup();
 
             // init characters' pooling
@@ -163,6 +162,8 @@ public class GameManager : MonoBehaviour
         ResetAllTanks();
         DisableTankControl();
 
+        m_CashManager.StartSpawn();
+
         m_CameraControl.SetStartPositionAndSize();
 
         m_RoundNumber++;
@@ -190,6 +191,8 @@ public class GameManager : MonoBehaviour
     private IEnumerator RoundEnding()
     {
         DisableTankControl();
+
+        m_CashManager.StopSpawn();
 
         m_InGameManager.gameObject.SetActive(false);
 

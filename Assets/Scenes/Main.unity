@@ -237,6 +237,8 @@ GameObject:
   - component: {fileID: 169300124}
   - component: {fileID: 169300126}
   - component: {fileID: 169300127}
+  - component: {fileID: 169300128}
+  - component: {fileID: 169300129}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -256,13 +258,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18e521b6f8588c44f9e68c769421eb47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 1
+  runInBackground: 1
+  autoStartServerBuild: 1
+  showDebugMessages: 0
+  serverTickRate: 30
+  serverBatching: 0
+  serverBatchInterval: 0
+  offlineScene: 
+  onlineScene: 
+  transport: {fileID: 169300128}
+  networkAddress: localhost
+  maxConnections: 4
+  disconnectInactiveConnections: 0
+  disconnectInactiveTimeout: 60
+  authenticator: {fileID: 0}
+  playerPrefab: {fileID: 8723559368329462808, guid: 168bc3eb8097686429a5f60fadbe6dfd,
+    type: 3}
+  autoCreatePlayer: 1
+  playerSpawnMethod: 0
+  spawnPrefabs:
+  - {fileID: 8723559368329462808, guid: 168bc3eb8097686429a5f60fadbe6dfd, type: 3}
   m_NumRoundsToWin: 5
   m_StartDelay: 3
   m_EndDelay: 3
   m_CameraControl: {fileID: 1744991282}
   m_MessageText: {fileID: 955535569}
-  m_TankPrefab: {fileID: 8723559368329462808, guid: 168bc3eb8097686429a5f60fadbe6dfd,
-    type: 3}
   m_Maps:
   - m_GameManager: {fileID: 169300124}
     m_MapButton: {fileID: 1516079488}
@@ -286,27 +307,7 @@ MonoBehaviour:
     m_MinZ: -50
     m_MaxX: 350
     m_MaxZ: 50
-  m_Tanks:
-  - m_PlayerColor: {r: 0.16470589, g: 0.39215687, b: 0.69803923, a: 0}
-    m_InfantryPoolSize: 20
-    m_BomberPoolSize: 10
-    m_PlayerNumber: 0
-    m_ColoredPlayerText: 
-    m_Instance: {fileID: 0}
-    m_Wins: 0
-    m_Infantries: []
-    m_Bombers: []
-    m_SpawnPoint: {fileID: 1679533387}
-  - m_PlayerColor: {r: 0.8980392, g: 0.18039216, b: 0.15686275, a: 0}
-    m_InfantryPoolSize: 20
-    m_BomberPoolSize: 10
-    m_PlayerNumber: 0
-    m_ColoredPlayerText: 
-    m_Instance: {fileID: 0}
-    m_Wins: 0
-    m_Infantries: []
-    m_Bombers: []
-    m_SpawnPoint: {fileID: 1277144698}
+  m_Tanks: []
   m_SoldierPrefabs:
   - {fileID: 3801933341596216302, guid: dee2dca2489dab8489dfc31e91d37445, type: 3}
   - {fileID: 3801933341596216302, guid: 463e549f62a326f49964245c42d9571b, type: 3}
@@ -453,6 +454,43 @@ MonoBehaviour:
     m_MaxX: 0
     m_MaxZ: 0
   m_Coins: []
+--- !u!114 &169300128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 169300123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Port: 7777
+  NoDelay: 1
+  Interval: 10
+  FastResend: 0
+  CongestionWindow: 1
+  SendWindowSize: 128
+  ReceiveWindowSize: 128
+  debugLog: 1
+  statisticsGUI: 1
+  statisticsLog: 0
+--- !u!114 &169300129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 169300123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showGUI: 1
+  offsetX: 0
+  offsetY: 0
 --- !u!1 &171567640
 GameObject:
   m_ObjectHideFlags: 0
@@ -6624,6 +6662,7 @@ MonoBehaviour:
   m_CashCounter:
   - {fileID: 979037543}
   - {fileID: 308773105}
+  m_InitMoney: 5
   m_InfoPanel: {fileID: 199650202}
   m_HelpText: {fileID: 1515571253}
   m_PriceText: {fileID: 171567642}

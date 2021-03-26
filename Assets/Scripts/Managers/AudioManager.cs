@@ -8,6 +8,12 @@ public class AudioManager : MonoBehaviour
 {
     public AudioMixer masterMixer;
 
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.M)) {
+            gameObject.GetComponent<Canvas>().enabled = true;
+        }
+    }
+
     public void setSfxLvl(float sfxLvl) {
         masterMixer.SetFloat("sfxVol", Mathf.Log10(sfxLvl) * 20);
     }

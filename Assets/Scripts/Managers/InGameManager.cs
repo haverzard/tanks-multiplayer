@@ -108,7 +108,7 @@ public class InGameManager : MonoBehaviour
     public void AddInfantry(int player) {
         GameObject soldier = m_GameManager.m_Tanks[player].GetAvailablePool("infantry");
         if (soldier) {
-            soldier.transform.position = m_GameManager.m_Tanks[player].m_Instance.transform.position;
+            soldier.transform.position = m_GameManager.m_Tanks[player].gameObject.transform.position;
             soldier.SetActive(true);
             infantryCounts[player]++;
             UpdateUI(player);
@@ -118,7 +118,7 @@ public class InGameManager : MonoBehaviour
     public void AddBomber(int player) {
         GameObject soldier = m_GameManager.m_Tanks[player].GetAvailablePool("bomber");
         if (soldier) {
-            soldier.transform.position = m_GameManager.m_Tanks[player].m_Instance.transform.position;
+            soldier.transform.position = m_GameManager.m_Tanks[player].gameObject.transform.position;
             soldier.SetActive(true);
             bomberCounts[player]++;
             UpdateUI(player);
@@ -126,7 +126,7 @@ public class InGameManager : MonoBehaviour
     }
 
     public void SetWeapon(int player, string weapon) {
-        m_GameManager.m_Tanks[player].m_Instance.GetComponent<TankShooting>().m_Weapon = weapon;
+        m_GameManager.m_Tanks[player].gameObject.GetComponent<TankShooting>().m_Weapon = weapon;
     }
 
     public void RemoveInfantry(int player) {

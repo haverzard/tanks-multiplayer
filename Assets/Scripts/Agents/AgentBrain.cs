@@ -21,16 +21,16 @@ public class AgentBrain : MonoBehaviour
 
     private void Update()
     {
-        if (m_GameManager.m_Tanks[0].m_Instance != null) {
+        if (m_GameManager.m_Tanks[0].gameObject != null) {
             GameObject closest = null;
             float d = float.MaxValue;
-            for (int i = 0; i < m_GameManager.m_Tanks.Length; i++) {
+            for (int i = 0; i < m_GameManager.m_Tanks.Count; i++) {
                 TankManager tm = m_GameManager.m_Tanks[i];
                 if (i != owner-1) {
                     // check tank
-                    float toTargetDistance = toTarget(tm.m_Instance);
+                    float toTargetDistance = toTarget(tm.gameObject);
                     if (toTargetDistance < d) {
-                        closest = tm.m_Instance;
+                        closest = tm.gameObject;
                         d = toTargetDistance;
                     }
                     // check soldiers

@@ -14,7 +14,7 @@ public class TankManager : NetworkBehaviour
     [HideInInspector] public int m_Wins;
     [HideInInspector] public List<GameObject> m_Infantries;
     [HideInInspector] public List<GameObject> m_Bombers;
-    [HideInInspector] public Transform m_SpawnPoint;
+    [HideInInspector] [SyncVar (hook="SetSpawnPoint")] public Transform m_SpawnPoint;
 
 
     private TankMovement m_Movement;       
@@ -75,6 +75,12 @@ public class TankManager : NetworkBehaviour
         return null;
     }
 
+    [Client]
+    public void SetSpawnPoint(Transform oldValue, Transform newValue)
+    {
+        m_SpawnPoint = newValue;
+    }
+
     [ClientRpc]
     public void RpcSetCamera()
     {
@@ -96,7 +102,6 @@ public class TankManager : NetworkBehaviour
         m_CanvasGameObject.SetActive(true);
     }
 
-    [ClientRpc]
     public void Reset()
     {
         gameObject.SetActive(false);

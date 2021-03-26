@@ -86,6 +86,8 @@ public class GameManager : NetworkManager
         TankManager tank = 
             Instantiate(playerPrefab, m_Maps[m_MapIdx].m_SpawnPoints[player].position, m_Maps[m_MapIdx].m_SpawnPoints[player].rotation).GetComponent<TankManager>();
 
+        NetworkServer.AddPlayerForConnection(conn, tank.gameObject);
+
         tank.m_SpawnPoint = m_Maps[m_MapIdx].m_SpawnPoints[player];
         tank.m_PlayerNumber = player+1;
         tank.m_PlayerColor = Random.ColorHSV(0, 1, 0.9f, 0.9f, 1f, 1f);
@@ -102,9 +104,6 @@ public class GameManager : NetworkManager
             tank.m_Bombers[j].GetComponent<AgentBrain>().owner = player+1;
             tank.m_Bombers[j].SetActive(false);
         }
-
-        NetworkServer.AddPlayerForConnection(conn, tank.gameObject);
-
         tank.Reset();
 
         m_Tanks.Add(tank);

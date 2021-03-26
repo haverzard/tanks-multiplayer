@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
-public class TankShooting : MonoBehaviour
+public class TankShooting : NetworkBehaviour
 {
     public int m_PlayerNumber = 1;       
     public GameObject m_Shell;            

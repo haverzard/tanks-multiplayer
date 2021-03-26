@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
-public class AgentHealth : MonoBehaviour
+public class AgentHealth : NetworkBehaviour
 {
     public float m_StartingHealth = 40f;
     public Slider m_Slider;
@@ -34,16 +35,21 @@ public class AgentHealth : MonoBehaviour
         SetHealthUI();
     }
     
-
     public void TakeDamage(float amount)
     {
-        // Adjust the tank's current health, update the UI based on the new health and check whether or not the tank is dead.
+        if (!isServer) return;
+        RpcTakeDamage(amount);        
+    }
+
+    [ClientRpc]
+    private void RpcTakeDamage(float amount) {
         m_CurrentHealth -= amount;
 
         SetHealthUI();
 
         if (m_CurrentHealth <= 0f && !m_Dead)
         {
+            gameObject.SetActive(false);
             OnDeath();
         }
     }
@@ -57,7 +63,7 @@ public class AgentHealth : MonoBehaviour
         m_FillImage.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
     }
 
-
+    [Command]
     private void OnDeath()
     {
         // Play the effects for the death of the tank and deactivate it.
@@ -69,7 +75,6 @@ public class AgentHealth : MonoBehaviour
         // m_ExplosionParticles.Play();
 
         // m_ExplosionAudio.Play();
-        gameObject.SetActive(false);
         string type = GetComponent<AgentBrain>().type;
         int owner = GetComponent<AgentBrain>().owner;
         if (type == "infantry") {

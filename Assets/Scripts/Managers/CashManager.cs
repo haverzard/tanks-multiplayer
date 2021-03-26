@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 public class CashManager : MonoBehaviour
 {
@@ -50,6 +51,7 @@ public class CashManager : MonoBehaviour
                 Vector3 pos = new Vector3(x, 0, z);
                 coin.transform.position = pos;
                 coin.SetActive(true);
+                NetworkServer.Spawn(coin);
             }
         }
         coroutine = StartCoroutine(SpawnCoins());

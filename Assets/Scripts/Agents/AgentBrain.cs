@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using Mirror;
 
-public class AgentBrain : MonoBehaviour
+public class AgentBrain : NetworkBehaviour
 {
     public GameManager m_GameManager;
     [HideInInspector] public int owner;
@@ -21,6 +22,7 @@ public class AgentBrain : MonoBehaviour
 
     private void Update()
     {
+        if (!isServer) return;
         if (m_GameManager.m_Tanks[0].gameObject != null) {
             GameObject closest = null;
             float d = float.MaxValue;

@@ -34,11 +34,15 @@ public class TankHealth : NetworkBehaviour
 
         SetHealthUI();
     }
-    
 
     public void TakeDamage(float amount)
     {
-        // Adjust the tank's current health, update the UI based on the new health and check whether or not the tank is dead.
+        if (!isServer) return;
+        RpcTakeDamage(amount);
+    }
+
+    [ClientRpc]
+    private void RpcTakeDamage(float amount) {
         m_CurrentHealth -= amount;
 
         SetHealthUI();
@@ -73,7 +77,12 @@ public class TankHealth : NetworkBehaviour
         if (!m_GameManager.isStarted) {
             GetComponent<TankManager>().Reset();
         } else {
-            gameObject.SetActive(false);
+            Disable();
         }
+    }
+
+    [Command]
+    private void Disable() {
+        gameObject.SetActive(false);
     }
 }

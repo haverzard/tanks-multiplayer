@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
-public class InGameManager : MonoBehaviour
+public class InGameManager : NetworkBehaviour
 {
     public GameManager m_GameManager;
     public Text[] m_InfantryCounter;
@@ -105,11 +106,17 @@ public class InGameManager : MonoBehaviour
         }
     }
 
+    [ClientRpc]
+    public void SetActive(bool active) {
+        gameObject.SetActive(active);
+    }
+
     public void AddInfantry(int player) {
         GameObject soldier = m_GameManager.m_Tanks[player].GetAvailablePool("infantry");
         if (soldier) {
             soldier.transform.position = m_GameManager.m_Tanks[player].gameObject.transform.position;
             soldier.SetActive(true);
+            NetworkServer.Spawn(soldier);
             infantryCounts[player]++;
             UpdateUI(player);
         }
@@ -120,6 +127,7 @@ public class InGameManager : MonoBehaviour
         if (soldier) {
             soldier.transform.position = m_GameManager.m_Tanks[player].gameObject.transform.position;
             soldier.SetActive(true);
+            NetworkServer.Spawn(soldier);
             bomberCounts[player]++;
             UpdateUI(player);
         }

@@ -10,7 +10,7 @@ public class TankHealth : NetworkBehaviour
     public Color m_FullHealthColor = Color.green;  
     public Color m_ZeroHealthColor = Color.red;    
     public GameObject m_ExplosionPrefab;
-    
+    public GameManager m_GameManager;
     
     private AudioSource m_ExplosionAudio;          
     private ParticleSystem m_ExplosionParticles;   
@@ -70,6 +70,10 @@ public class TankHealth : NetworkBehaviour
         m_ExplosionParticles.Play();
 
         m_ExplosionAudio.Play();
-        gameObject.SetActive(false);
+        if (!m_GameManager.isStarted) {
+            GetComponent<TankManager>().Reset();
+        } else {
+            gameObject.SetActive(false);
+        }
     }
 }

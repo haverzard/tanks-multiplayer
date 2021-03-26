@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using Mirror;
 
 
-public class GameManager : NetworkManager
+public class GameManager : MonoBehaviour
 {
     public int m_NumRoundsToWin = 5;
     public float m_StartDelay = 3f;
@@ -14,9 +14,9 @@ public class GameManager : NetworkManager
     public CameraControl m_CameraControl;
     public Text m_MessageText;
     public MapManager[] m_Maps;
-    public List<TankManager> m_Tanks;
     public GameObject[] m_SoldierPrefabs;
     public InGameManager m_InGameManager;
+    [HideInInspector] public List<TankManager> m_Tanks;
 
     public Canvas m_MessageScreen;
     public Canvas m_SettingsScreen;
@@ -25,6 +25,7 @@ public class GameManager : NetworkManager
     public Button m_StartButton;
     public Button m_QuitButton;
 
+    public bool isStarted;
 
     private int m_RoundNumber;
     private WaitForSeconds m_StartWait;
@@ -35,14 +36,14 @@ public class GameManager : NetworkManager
     private int m_MapIdx = 0;
 
     private void Start() {
-        m_StartWait = new WaitForSeconds (m_StartDelay);
-        m_EndWait = new WaitForSeconds (m_EndDelay);
+        isStarted = false;
         m_CashManager = GetComponent<CashManager>();
         m_InGameManager.gameObject.SetActive(false);
         
         for (int i = 0; i < m_Maps.Length; i++) {
-            m_Maps[i].Init();
             m_Maps[i].m_MapPrefab.SetActive(false);
+            int mapIdx = i;
+            m_Maps[i].m_MapButton.onClick.AddListener(() => StartGame(mapIdx));
         }
         m_Maps[0].m_MapPrefab.SetActive(true);
 
@@ -57,58 +58,8 @@ public class GameManager : NetworkManager
         m_QuitButton.onClick.AddListener(QuitGame);
     }
 
-    private void Init()
-    {
+    public void Init() {
         m_StartScreen.enabled = true;
-    }
-
-    // public override void OnClientConnect(NetworkConnection conn)
-    // {
-    //     if (!clientLoadedScene)
-    //     {
-    //         if (!ClientScene.ready) ClientScene.Ready(conn);
-    //     }
-    // }
-
-    public override void OnServerConnect(NetworkConnection conn)
-    {
-        SpawnTank(conn);
-
-        if (m_Tanks.Count == 2)
-        {
-            Init();
-        }
-    }
-
-    private void SpawnTank(NetworkConnection conn)
-    {
-        int player = m_Tanks.Count;
-        TankManager tank = 
-            Instantiate(playerPrefab, m_Maps[m_MapIdx].m_SpawnPoints[player].position, m_Maps[m_MapIdx].m_SpawnPoints[player].rotation).GetComponent<TankManager>();
-
-        NetworkServer.AddPlayerForConnection(conn, tank.gameObject);
-
-        tank.m_SpawnPoint = m_Maps[m_MapIdx].m_SpawnPoints[player];
-        tank.m_PlayerNumber = player+1;
-        tank.m_PlayerColor = Random.ColorHSV(0, 1, 0.9f, 0.9f, 1f, 1f);
-        tank.Setup();
-        for (int j = 0; j < tank.m_InfantryPoolSize; j++) {
-            tank.m_Infantries.Add(null);
-            tank.m_Infantries[j] = Instantiate(m_SoldierPrefabs[0], new Vector3(0,0,0), Quaternion.identity) as GameObject;
-            tank.m_Infantries[j].GetComponent<AgentBrain>().owner = player+1;
-            tank.m_Infantries[j].SetActive(false);
-        }
-        for (int j = 0; j < tank.m_BomberPoolSize; j++) {
-            tank.m_Bombers.Add(null);
-            tank.m_Bombers[j] = Instantiate(m_SoldierPrefabs[1], new Vector3(0,0,0), Quaternion.identity) as GameObject;
-            tank.m_Bombers[j].GetComponent<AgentBrain>().owner = player+1;
-            tank.m_Bombers[j].SetActive(false);
-        }
-        tank.Reset();
-
-        m_Tanks.Add(tank);
-
-        tank.RpcSetCamera();
     }
 
     private void QuitGame() {
@@ -124,17 +75,22 @@ public class GameManager : NetworkManager
     }
 
     public void StartGame(int mapIdx) {
-        m_MapScreen.enabled = false;
         m_MessageScreen.enabled = true;
+        m_MapScreen.enabled = false;
 
         m_CashManager.m_MapManager = m_Maps[mapIdx];
         m_MapIdx = mapIdx;
         for (int i = 0; i < m_Tanks.Count; i++) {
-            m_Tanks[i].m_SpawnPoint = m_Maps[m_MapIdx].m_SpawnPoints[i];
+            m_Tanks[i].SetSpawnPoint(m_Maps[m_MapIdx].m_SpawnPoints[i]);
         }
 
         m_Maps[0].m_MapPrefab.SetActive(false);
         m_Maps[m_MapIdx].m_MapPrefab.SetActive(true);
+
+        m_StartWait = new WaitForSeconds (m_StartDelay);
+        m_EndWait = new WaitForSeconds (m_EndDelay);
+
+        isStarted = true;
 
         StartCoroutine(GameLoop());
     }
@@ -154,47 +110,6 @@ public class GameManager : NetworkManager
         ab2.type = "bomber";
     }
 
-    // private void SpawnAllTanks(int mapIdx)
-    // {
-    //     for (int i = 0; i < m_Tanks.Length; i++)
-    //     {
-    //         m_Tanks[i].gameObject =
-    //             Instantiate(m_TankPrefab, m_Maps[mapIdx].m_SpawnPoints[i].position, m_Maps[mapIdx].m_SpawnPoints[i].rotation) as GameObject;
-    //         m_Tanks[i].m_SpawnPoint = m_Maps[mapIdx].m_SpawnPoints[i];
-    //         m_Tanks[i].m_PlayerNumber = i + 1;
-    //         m_Tanks[i].Setup();
-
-    //         // init characters' pooling
-    //         TankManager tm = m_Tanks[i];
-    //         for (int j = 0; j < tm.m_InfantryPoolSize; j++) {
-    //             tm.m_Infantries.Add(null);
-    //             tm.m_Infantries[j] = Instantiate(m_SoldierPrefabs[0], new Vector3(0,0,0), Quaternion.identity) as GameObject;
-    //             tm.m_Infantries[j].GetComponent<AgentBrain>().owner = i + 1;
-    //             tm.m_Infantries[j].SetActive(false);
-    //         }
-    //         for (int j = 0; j < tm.m_BomberPoolSize; j++) {
-    //             tm.m_Bombers.Add(null);
-    //             tm.m_Bombers[j] = Instantiate(m_SoldierPrefabs[1], new Vector3(0,0,0), Quaternion.identity) as GameObject;
-    //             tm.m_Bombers[j].GetComponent<AgentBrain>().owner = i + 1;
-    //             tm.m_Bombers[j].SetActive(false);
-    //         }
-    //     }
-    // }
-
-
-    // private void SetCameraTargets()
-    // {
-    //     Transform[] targets = new Transform[m_Tanks.Length];
-
-    //     for (int i = 0; i < targets.Length; i++)
-    //     {
-    //         targets[i] = m_Tanks[i].gameObject.transform;
-    //     }
-
-    //     m_CameraControl.m_Targets = targets;
-    // }
-
-
     private IEnumerator GameLoop()
     {
         yield return StartCoroutine(RoundStarting());
@@ -210,7 +125,6 @@ public class GameManager : NetworkManager
             StartCoroutine(GameLoop());
         }
     }
-
 
     private IEnumerator RoundStarting()
     {
@@ -232,16 +146,15 @@ public class GameManager : NetworkManager
     {
         EnableTankControl();
 
-        m_InGameManager.gameObject.SetActive(true);
+        m_InGameManager.SetActive(true);
 
         m_MessageText.text = string.Empty;
 
-        while (OneTankLeft())
+        while (!OneTankLeft())
         {
             yield return null;
         }
     }
-
 
     private IEnumerator RoundEnding()
     {
@@ -249,7 +162,7 @@ public class GameManager : NetworkManager
 
         m_CashManager.StopSpawn();
 
-        m_InGameManager.gameObject.SetActive(false);
+        m_InGameManager.SetActive(false);
 
         m_RoundWinner = null;
 
@@ -266,16 +179,24 @@ public class GameManager : NetworkManager
         yield return m_EndWait;
     }
 
+    // [ClientRpc]
+    // private void BroadcastMessage(string message) {
+    //     m_MessageScreen.enabled = true;
+    //     m_MessageText.text = message;
+    // }
 
     private bool OneTankLeft()
     {
         int numTanksLeft = 0;
 
+            // Debug.Log("OFF");
         for (int i = 0; i < m_Tanks.Count; i++)
         {
+            // Debug.Log(m_Tanks[i].gameObject.activeSelf);
             if (m_Tanks[i].gameObject.activeSelf)
                 numTanksLeft++;
         }
+            // Debug.Log(numTanksLeft);
 
         return numTanksLeft <= 1;
     }
@@ -322,7 +243,7 @@ public class GameManager : NetworkManager
         if (m_GameWinner != null)
             message = m_GameWinner.m_ColoredPlayerText + " WINS THE GAME!";
 
-        return message;
+        return message; 
     }
 
 

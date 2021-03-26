@@ -14,14 +14,13 @@ public class TankManager : NetworkBehaviour
     [HideInInspector] public int m_Wins;
     [HideInInspector] public List<GameObject> m_Infantries;
     [HideInInspector] public List<GameObject> m_Bombers;
-    [HideInInspector] [SyncVar (hook="SetSpawnPoint")] public Transform m_SpawnPoint;
+    [HideInInspector] public Transform m_SpawnPoint;
 
 
     private TankMovement m_Movement;       
     private TankShooting m_Shooting;
     private GameObject m_CanvasGameObject;
 
-    [Client]
     public void Setup()
     {
         gameObject.SetActive(false);
@@ -44,7 +43,6 @@ public class TankManager : NetworkBehaviour
         }
     }
 
-    [Client]
     public void DisableControl()
     {
         m_Movement.enabled = false;
@@ -75,10 +73,10 @@ public class TankManager : NetworkBehaviour
         return null;
     }
 
-    [Client]
-    public void SetSpawnPoint(Transform oldValue, Transform newValue)
+    [ClientRpc]
+    public void SetSpawnPoint(Transform t)
     {
-        m_SpawnPoint = newValue;
+        m_SpawnPoint = t;
     }
 
     [ClientRpc]
@@ -86,14 +84,13 @@ public class TankManager : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
-            CameraControl camera = ((GameManager)NetworkManager.singleton).m_CameraControl;
+            CameraControl camera = ((ServerManager)NetworkManager.singleton).m_CameraControl;
 
             Transform[] targets = { transform };
             camera.m_Targets = targets;
         }
     }
 
-    [Client]
     public void EnableControl()
     {
         m_Movement.enabled = true;
@@ -107,7 +104,6 @@ public class TankManager : NetworkBehaviour
         gameObject.SetActive(false);
         gameObject.transform.position = m_SpawnPoint.position;
         gameObject.transform.rotation = m_SpawnPoint.rotation;
-
         gameObject.SetActive(true);
     }
 }

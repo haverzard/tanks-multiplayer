@@ -15,8 +15,4 @@ public class MapManager
     public int m_MinZ;
     public int m_MaxX;
     public int m_MaxZ;
-
-    public void Init() {
-        m_MapButton.onClick.AddListener(() => m_GameManager.StartGame(m_MapIdx));
-    }
 }

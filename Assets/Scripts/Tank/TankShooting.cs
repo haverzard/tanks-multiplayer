@@ -26,13 +26,11 @@ public class TankShooting : NetworkBehaviour
     private float m_ChargeSpeed;         
     private bool m_Fired;                
 
-
     private void OnEnable()
     {
         m_CurrentLaunchForce = m_MinLaunchForce;
         m_AimSlider.value = m_MinLaunchForce;
     }
-
 
     private void Start()
     {
@@ -90,6 +88,7 @@ public class TankShooting : NetworkBehaviour
 
     private void Update()
     {
+        if (!isLocalPlayer) return;
         // Track the current state of the fire button and make decisions based on the current launch force.
         m_AimSlider.value = m_MinLaunchForce;
         
@@ -118,7 +117,7 @@ public class TankShooting : NetworkBehaviour
         else if (Input.GetButtonUp(m_FireButton) && !m_Fired)
         {
             // we released the button, having not fired yet
-            Fire();
+            IMFire();
         }
     }
 
@@ -142,6 +141,12 @@ public class TankShooting : NetworkBehaviour
         return null;
     }
 
+    [Command]
+    private void IMFire() {
+        Fire();
+    }
+
+    [ClientRpc]
     private void Fire()
     {
         // Instantiate and launch the shell.
@@ -153,6 +158,7 @@ public class TankShooting : NetworkBehaviour
                 shellInstance.transform.position = m_FireTransform.position;
                 shellInstance.transform.rotation = m_FireTransform.rotation;
                 shellInstance.SetActive(true);
+
                 shellInstance.GetComponent<Rigidbody>().velocity = m_CurrentLaunchForce * m_FireTransform.forward;
             }
         } else if (m_Weapon == "shotgun") { 
@@ -190,7 +196,6 @@ public class TankShooting : NetworkBehaviour
 
         m_ShootingAudio.clip = m_FireClip;
         m_ShootingAudio.Play();
-
         m_CurrentLaunchForce = m_MinLaunchForce;
     }
 }

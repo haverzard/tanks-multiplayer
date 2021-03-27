@@ -106,7 +106,6 @@ public class InGameManager : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
     public void SetActive(bool active) {
         gameObject.SetActive(active);
     }

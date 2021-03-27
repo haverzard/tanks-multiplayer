@@ -9,21 +9,25 @@ public class TankManager : NetworkBehaviour
     public Color m_PlayerColor;
     public int m_InfantryPoolSize = 20;
     public int m_BomberPoolSize = 10;
-    [HideInInspector] public int m_PlayerNumber;
+    [HideInInspector] [SyncVar (hook=nameof(Setup))] public int m_PlayerNumber;
+    [HideInInspector] [SyncVar (hook=nameof(SetControl))] public bool m_IsAlive;
     [HideInInspector] public string m_ColoredPlayerText;
     [HideInInspector] public int m_Wins;
     [HideInInspector] public List<GameObject> m_Infantries;
     [HideInInspector] public List<GameObject> m_Bombers;
     [HideInInspector] public Transform m_SpawnPoint;
+    [HideInInspector] public GameManager m_GameManager;
 
 
     private TankMovement m_Movement;       
     private TankShooting m_Shooting;
     private GameObject m_CanvasGameObject;
+    private GameObject m_Object;
 
-    public void Setup()
+    [Client]
+    public void Setup(int oldNum, int newNum)
     {
-        gameObject.SetActive(false);
+        m_PlayerNumber = newNum;
         m_Movement = GetComponent<TankMovement>();
         m_Shooting = GetComponent<TankShooting>();
         m_CanvasGameObject = GetComponentInChildren<Canvas>().gameObject;
@@ -41,8 +45,29 @@ public class TankManager : NetworkBehaviour
         {
             renderers[i].material.color = m_PlayerColor;
         }
+        m_Movement.enabled = true;
+        m_Shooting.enabled = true;
+
+        m_CanvasGameObject.SetActive(true);
     }
 
+    [Client]
+    public void SetControl(bool oldVal, bool newVal)
+    {
+        m_Movement.enabled = newVal;
+        m_Shooting.enabled = newVal;
+
+        m_CanvasGameObject.SetActive(newVal);
+
+        for (int i = 0; i < m_Infantries.Count; i++) {
+            m_Infantries[i].SetActive(newVal);
+        }
+        for (int i = 0; i < m_Bombers.Count; i++) {
+            m_Bombers[i].SetActive(newVal);
+        }
+    }
+
+    [ClientRpc]
     public void DisableControl()
     {
         m_Movement.enabled = false;
@@ -91,6 +116,7 @@ public class TankManager : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
     public void EnableControl()
     {
         m_Movement.enabled = true;
@@ -99,11 +125,13 @@ public class TankManager : NetworkBehaviour
         m_CanvasGameObject.SetActive(true);
     }
 
+    [ClientRpc]
     public void Reset()
     {
+        transform.position = m_SpawnPoint.position;
+        transform.rotation = m_SpawnPoint.rotation;
+
         gameObject.SetActive(false);
-        gameObject.transform.position = m_SpawnPoint.position;
-        gameObject.transform.rotation = m_SpawnPoint.rotation;
         gameObject.SetActive(true);
     }
 }

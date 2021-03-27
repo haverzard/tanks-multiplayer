@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class CashManager : MonoBehaviour
+public class CashManager : NetworkBehaviour
 {
     public GameObject m_CoinPrefab;
     public MapManager m_MapManager;
@@ -31,12 +31,18 @@ public class CashManager : MonoBehaviour
         StopCoroutine(coroutine);
     }
 
-    public GameObject GetAvailablePool() {
+    public int? GetAvailablePool() {
         for (int i = 0; i < 20; i++) {
             if (m_Coins[i].activeSelf) continue;
-            return m_Coins[i];
+            return i;
         }
         return null;
+    }
+
+    [ClientRpc]
+    private void SpawnCoin(int idx, Vector3 t) {
+        m_Coins[idx].transform.position = t;
+        m_Coins[idx].SetActive(true);
     }
 
     private IEnumerator SpawnCoins()
@@ -44,14 +50,17 @@ public class CashManager : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         for (int i = 0; i < m_CoinCounts; i++) {
-            GameObject coin = GetAvailablePool();
-            if (coin) {
+            int? idx = GetAvailablePool();
+            if (idx != null) {
+                int idxx = idx ?? 0;
+                Debug.Log("HIII");
                 float x = Random.Range(m_MapManager.m_MinX, m_MapManager.m_MaxX);
                 float z = Random.Range(m_MapManager.m_MinZ, m_MapManager.m_MaxZ);
                 Vector3 pos = new Vector3(x, 0, z);
-                coin.transform.position = pos;
-                coin.SetActive(true);
-                NetworkServer.Spawn(coin);
+                SpawnCoin(idxx, pos);
+                // coin.transform.position = pos;
+                // coin.SetActive(true);
+                // NetworkServer.Spawn(m_Coins[i]);
             }
         }
         coroutine = StartCoroutine(SpawnCoins());

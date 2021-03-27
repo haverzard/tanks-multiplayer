@@ -11,7 +11,6 @@ public class Cash : NetworkBehaviour
 
     private void OnEnable()
     {
-        if (!isLocalPlayer) return;
         Invoke("IMDisable", m_MaxLifeTime);
     }
 
@@ -22,25 +21,12 @@ public class Cash : NetworkBehaviour
     }
 
     [Command]
-    private void Disable() {
+    public void Disable() {
         RpcDisable();
     }
 
     [ClientRpc]
     private void RpcDisable() {
         gameObject.SetActive(false);
-    }
-
-    private void OnCollisionEnter(Collision other)
-    {
-        if (!isLocalPlayer) return;
-        Debug.Log("OOF");
-        GameObject obj = other.gameObject;
-        TankMovement tankMovement = obj.GetComponent<TankMovement>();
-        if (!tankMovement)
-            return;
-        Debug.Log("OOF");
-        m_GameManager.m_InGameManager.AddCash(tankMovement.m_PlayerNumber-1);
-        Disable();
     }
 }

@@ -35,6 +35,19 @@ public class TankHealth : NetworkBehaviour
         SetHealthUI();
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("HIHI");
+        if (!isLocalPlayer) return;
+        GameObject obj = other.gameObject;
+        Cash cash = obj.GetComponent<Cash>();
+        Debug.Log("HEHE");
+        if (!cash)
+            return;
+        m_GameManager.m_InGameManager.AddCash(0);
+        cash.Disable();
+    }
+
     public void TakeDamage(float amount)
     {
         if (!isServer) return;
@@ -77,7 +90,7 @@ public class TankHealth : NetworkBehaviour
         if (!m_GameManager.isStarted) {
             GetComponent<TankManager>().Reset();
         } else {
-            Disable();
+            GetComponent<TankManager>().m_IsAlive = false;
         }
     }
 

@@ -59,7 +59,6 @@ public class TankMovement : NetworkBehaviour
         EngineAudio();
     }
 
-
     private void EngineAudio()
     {
         // Play the correct audio clip based on whether or not the tank is moving and what audio is currently playing.
@@ -83,7 +82,6 @@ public class TankMovement : NetworkBehaviour
         }
 
     }
-
 
     private void FixedUpdate()
     {

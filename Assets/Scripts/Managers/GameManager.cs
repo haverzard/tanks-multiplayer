@@ -121,7 +121,6 @@ public class GameManager : NetworkBehaviour
         m_CashManager.Init();
         EnableMessage();
         FlagStart();
-        ResetWeapon();
 
         StartCoroutine(GameLoop());
     }
@@ -143,12 +142,6 @@ public class GameManager : NetworkBehaviour
         if (m_InGameManager.mine.m_PlayerNumber == owner) {
             m_InGameManager.AddCash(val, 0);
         }
-    }
-
-
-    [ClientRpc]
-    private void ResetWeapon() {
-        m_InGameManager.ResetWeapon();
     }
 
     [ClientRpc]

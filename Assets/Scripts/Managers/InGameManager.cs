@@ -62,11 +62,6 @@ public class InGameManager : MonoBehaviour
         });
     }
 
-    public void ResetWeapon() {
-        hasShotgun[0] = false;
-        hasAirstrike[0] = false;
-    }
-
     private void OnEnable() {
         numberOfPlayers = Math.Min(numberOfPlayers, 1);
         for (int i = 0; i < numberOfPlayers; i++) {

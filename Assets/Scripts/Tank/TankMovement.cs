@@ -42,8 +42,8 @@ public class TankMovement : NetworkBehaviour
 
     private void Start()
     {
-        m_MovementAxisName = "Vertical" + m_PlayerNumber;
-        m_TurnAxisName = "Horizontal" + m_PlayerNumber;
+        m_MovementAxisName = "Vertical" + 1;
+        m_TurnAxisName = "Horizontal" + 1;
 
         m_OriginalPitch = m_MovementAudio.pitch;
     }
@@ -51,7 +51,6 @@ public class TankMovement : NetworkBehaviour
 
     private void Update()
     {
-        Debug.Log("OOF123");
         if (!isLocalPlayer) return;
         // Store the player's input and make sure the audio for the engine is playing.
         m_MovementInputValue = Input.GetAxis(m_MovementAxisName);

@@ -27,10 +27,11 @@ public class InGameManager : NetworkBehaviour
     private List<int> infantryCounts;
     private List<int> bomberCounts;
     private List<int> cashCounts;
+    private TankManager mine;
 
     private void Start()
     {
-        numberOfPlayers = 2;
+        numberOfPlayers = 1;
         infantryCounts = new List<int>();
         bomberCounts = new List<int>();
         cashCounts = new List<int>();
@@ -65,7 +66,7 @@ public class InGameManager : NetworkBehaviour
     }
 
     private void OnEnable() {
-        numberOfPlayers = Math.Min(numberOfPlayers, 2);
+        numberOfPlayers = Math.Min(numberOfPlayers, 1);
         for (int i = 0; i < numberOfPlayers; i++) {
             infantryCounts[i] = 0;
             bomberCounts[i] = 0;
@@ -74,6 +75,12 @@ public class InGameManager : NetworkBehaviour
         if (numberOfPlayers == 1) {
             m_InfantryCounter[1].enabled = false;
             m_BomberCounter[1].enabled = false;
+        }
+        for (int i = 0; i < m_GameManager.m_Tanks.Count; i++) {
+            if (m_GameManager.m_Tanks[i].GetComponent<NetworkIdentity>().isLocalPlayer) {
+                mine = m_GameManager.m_Tanks[i];
+                break;
+            }
         }
     }
 
@@ -111,9 +118,9 @@ public class InGameManager : NetworkBehaviour
     }
 
     public void AddInfantry(int player) {
-        GameObject soldier = m_GameManager.m_Tanks[player].GetAvailablePool("infantry");
+        GameObject soldier = mine.GetAvailablePool("infantry");
         if (soldier) {
-            soldier.transform.position = m_GameManager.m_Tanks[player].gameObject.transform.position;
+            soldier.transform.position = mine.gameObject.transform.position;
             soldier.SetActive(true);
             NetworkServer.Spawn(soldier);
             infantryCounts[player]++;
@@ -124,7 +131,7 @@ public class InGameManager : NetworkBehaviour
     public void AddBomber(int player) {
         GameObject soldier = m_GameManager.m_Tanks[player].GetAvailablePool("bomber");
         if (soldier) {
-            soldier.transform.position = m_GameManager.m_Tanks[player].gameObject.transform.position;
+            soldier.transform.position = mine.gameObject.transform.position;
             soldier.SetActive(true);
             NetworkServer.Spawn(soldier);
             bomberCounts[player]++;
@@ -133,7 +140,7 @@ public class InGameManager : NetworkBehaviour
     }
 
     public void SetWeapon(int player, string weapon) {
-        m_GameManager.m_Tanks[player].gameObject.GetComponent<TankShooting>().m_Weapon = weapon;
+        mine.GetComponent<TankShooting>().m_Weapon = weapon;
     }
 
     public void RemoveInfantry(int player) {

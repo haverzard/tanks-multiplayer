@@ -16,7 +16,7 @@ public class TankShooting : NetworkBehaviour
     public float m_MinLaunchForce = 15f; 
     public float m_MaxLaunchForce = 30f; 
     public float m_MaxChargeTime = 0.75f;
-    public string m_Weapon = "bazooka";
+    [SyncVar (hook="SetWeapon")] public string m_Weapon = "bazooka";
 
     private List<GameObject> bazookaShells;
     private List<GameObject> shotgunShells;
@@ -26,6 +26,11 @@ public class TankShooting : NetworkBehaviour
     private float m_ChargeSpeed;         
     private bool m_Fired;                
 
+    [Client]
+    public void SetWeapon(string oldVal, string newVal) {
+        m_Weapon = newVal;
+    }
+
     private void OnEnable()
     {
         m_CurrentLaunchForce = m_MinLaunchForce;
@@ -34,7 +39,7 @@ public class TankShooting : NetworkBehaviour
 
     private void Start()
     {
-        m_FireButton = "Fire" + m_PlayerNumber;
+        m_FireButton = "Fire" + 1;
         bazookaShells = new List<GameObject>();
         shotgunShells = new List<GameObject>();
         airstrikeShells = new List<GameObject>();

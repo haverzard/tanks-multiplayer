@@ -45,7 +45,6 @@ public class ServerManager : NetworkManager
 
     public void Init() {
         m_GameManager.m_Tanks = m_Tanks;
-        m_GameManager.CmdSetName();
         m_GameManager.Init();
     }
 

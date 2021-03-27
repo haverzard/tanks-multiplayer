@@ -36,6 +36,7 @@ public class GameManager : NetworkBehaviour
     private TankManager m_RoundWinner;
     private TankManager m_GameWinner;
     private int m_MapIdx = 0;
+    private string m_Name;
 
     [Client]
     public void SetTanks(List<TankManager> oldVal, List<TankManager> newVal) {
@@ -46,6 +47,7 @@ public class GameManager : NetworkBehaviour
         isStarted = false;
         m_NameScreen.enabled = false;
         m_InGameManager.gameObject.SetActive(false);
+        m_Name = m_ClientManager.name;
         
         for (int i = 0; i < m_Maps.Length; i++) {
             int mapIdx = i;
@@ -71,10 +73,9 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     public void SetName() {
         for (int i = 0; i < m_Tanks.Count; i++) {
-            Debug.Log("NAME "+m_ClientManager.name);
+            Debug.Log("NAME :"+m_Name);
             if (m_Tanks[i].isLocalPlayer) {
-                Debug.Log(m_ClientManager.name);
-                m_Tanks[i].SetName(m_ClientManager.name);
+                m_Tanks[i].SetName(m_Name);
                 return;
             }
         }
@@ -97,6 +98,7 @@ public class GameManager : NetworkBehaviour
     }
 
     public void StartGame(int mapIdx) {
+        CmdSetName();
         m_MessageScreen.enabled = true;
         m_MapScreen.enabled = false;
 

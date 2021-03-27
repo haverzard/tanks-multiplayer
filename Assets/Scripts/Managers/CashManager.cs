@@ -7,6 +7,7 @@ public class CashManager : NetworkBehaviour
 {
     public GameObject m_CoinPrefab;
     public MapManager m_MapManager;
+    public GameManager m_GameManager;
 
     [HideInInspector] public List<GameObject> m_Coins;
 
@@ -15,6 +16,7 @@ public class CashManager : NetworkBehaviour
 
     public void Init()
     {
+        m_CoinPrefab.GetComponent<Cash>().m_GameManager = m_GameManager;
         if (m_Coins.Count != 0) return;
         GameObject coin;
         for (int i = 0; i < 50; i++) {

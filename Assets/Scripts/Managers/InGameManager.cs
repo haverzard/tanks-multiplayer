@@ -127,6 +127,11 @@ public class InGameManager : MonoBehaviour
         UpdateUI(player);
     }
 
+    public void AddCash(int val) {
+        mine.m_Cash = val;
+        UpdateUI(0);
+    }
+
     public bool UseCash(int player, int amount) {
         if (mine.m_Cash >= amount) {
             mine.m_Cash = mine.m_Cash - amount;

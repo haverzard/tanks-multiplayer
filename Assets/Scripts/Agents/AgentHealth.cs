@@ -12,19 +12,8 @@ public class AgentHealth : NetworkBehaviour
     public LayerMask m_TankMask;
     public GameManager m_GameManager;
     
-    // private AudioSource m_ExplosionAudio;          
-    // private ParticleSystem m_ExplosionParticles;   
     private float m_CurrentHealth;
     private bool m_Dead;
-
-
-    private void Awake()
-    {
-        // m_ExplosionParticles = Instantiate(m_ExplosionPrefab).GetComponent<ParticleSystem>();
-        // m_ExplosionAudio = m_ExplosionParticles.GetComponent<AudioSource>();
-
-        // m_ExplosionParticles.gameObject.SetActive(false);
-    }
 
 
     private void OnEnable()
@@ -73,16 +62,5 @@ public class AgentHealth : NetworkBehaviour
         m_Dead = true;
         DisableAgent();
         m_GameManager.UpdateUI(GetComponent<AgentBrain>().type, GetComponent<AgentBrain>().owner);
-        // if (m_InGameManager.mine.isLocalPlayer) {
-        //     gameObject.SetActive(false);
-
-        //     string type = GetComponent<AgentBrain>().type;
-        //     int owner = GetComponent<AgentBrain>().owner;
-        //     if (type == "infantry") {
-        //         m_InGameManager.RemoveInfantry(0);
-        //     } else if (type == "bomber") {
-        //         m_InGameManager.RemoveBomber(0);
-        //     }
-        // }
     }
 }

@@ -42,29 +42,10 @@ public class TankManager : NetworkBehaviour
         soldier.SetActive(true);
     }
 
-    // [Client]
-    // public void SetSoldiers(GameObject[] oldVal, GameObject[] newVal) {
-    //     m_SoldierPrefabs = newVal;
-    // }
-    //     for (int j = 0; j < m_InfantryPoolSize; j++) {
-    //         m_Infantries.Add(null);
-    //         m_Infantries[j] = Instantiate(m_SoldierPrefabs[0], new Vector3(0,0,0), Quaternion.identity) as GameObject;
-    //         m_Infantries[j].GetComponent<AgentBrain>().owner = player+1;
-    //         m_Infantries[j].SetActive(false);
-
-    //         GameObject soldier = m_Infantries[j];
-    //         NetworkServer.Spawn(soldier);
-    //     }
-    //     for (int j = 0; j < m_BomberPoolSize; j++) {
-    //         m_Bombers.Add(null);
-    //         m_Bombers[j] = Instantiate(m_SoldierPrefabs[1], new Vector3(0,0,0), Quaternion.identity) as GameObject;
-    //         m_Bombers[j].GetComponent<AgentBrain>().owner = player+1;
-    //         m_Bombers[j].SetActive(false);
-
-    //         GameObject soldier = m_Bombers[j];
-    //         NetworkServer.Spawn(soldier);
-    //     }
-    // }
+    [Command]
+    public void SetName(string name) {
+        m_ColoredPlayerText = "<color=#" + ColorUtility.ToHtmlStringRGB(m_PlayerColor) + ">"+ name + "</color>";
+    }
 
     [Client]
     public void Setup(int oldNum, int newNum)
@@ -78,49 +59,18 @@ public class TankManager : NetworkBehaviour
         m_Movement.m_PlayerNumber = newNum;
         m_Shooting.m_PlayerNumber = newNum;
 
-        m_ColoredPlayerText = "<color=#" + ColorUtility.ToHtmlStringRGB(m_PlayerColor) + ">PLAYER " + m_PlayerNumber + "</color>";
-
         MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
 
         for (int i = 0; i < renderers.Length; i++)
         {
             renderers[i].material.color = m_PlayerColor;
         }
-
-        // for (int j = 0; j < tank.m_InfantryPoolSize; j++) {
-        //     tank.m_Infantries.Add(null);
-        //     tank.m_Infantries[j] = Instantiate(m_SoldierPrefabs[0], new Vector3(0,0,0), Quaternion.identity) as GameObject;
-        //     tank.m_Infantries[j].GetComponent<AgentBrain>().owner = player+1;
-        //     tank.m_Infantries[j].SetActive(false);
-        // }
-        // for (int j = 0; j < tank.m_BomberPoolSize; j++) {
-        //     tank.m_Bombers.Add(null);
-        //     tank.m_Bombers[j] = Instantiate(m_SoldierPrefabs[1], new Vector3(0,0,0), Quaternion.identity) as GameObject;
-        //     tank.m_Bombers[j].GetComponent<AgentBrain>().owner = player+1;
-        //     tank.m_Bombers[j].SetActive(false);
-        // }
     }
-
-    [Client]
-    public void SetCash(int val) {
-        m_Cash = val;
-        m_GameManager.m_InGameManager.UpdateUI(0);
-    }
-
-    [ClientRpc]
-    public void RpcSetCash(int val) {
-    }
-
 
     [Client]
     public void SetPlayerColor(Color oldVal, Color newVal) {
         m_PlayerColor = newVal;
     }
-
-    // [Client]
-    // public void SetGameManager(GameManager oldVal, GameManager newVal) {
-    //     m_GameManager = newVal;
-    // }
 
     [Client]
     public void SetControl(bool oldVal, bool newVal)
@@ -138,16 +88,6 @@ public class TankManager : NetworkBehaviour
                 m_Bombers[i].SetActive(false);
             }
         }
-    }
-
-    [ClientRpc]
-    public void DisableControl()
-    {
-        m_Movement.enabled = false;
-        m_Shooting.enabled = false;
-
-        m_CanvasGameObject.SetActive(false);
-
     }
 
     public GameObject GetAvailablePool(string type) {
@@ -181,15 +121,6 @@ public class TankManager : NetworkBehaviour
             Transform[] targets = { transform };
             camera.m_Targets = targets;
         }
-    }
-
-    [ClientRpc]
-    public void EnableControl()
-    {
-        m_Movement.enabled = true;
-        m_Shooting.enabled = true;
-
-        m_CanvasGameObject.SetActive(true);
     }
 
     [ClientRpc]

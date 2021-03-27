@@ -6,10 +6,7 @@ using Mirror;
 public class AgentExploding : NetworkBehaviour
 {
     public Rigidbody m_Shell;            
-    public Transform m_FireTransform;    
-    // public AudioSource m_ShootingAudio;  
-    // public AudioClip m_ChargingClip;     
-    // public AudioClip m_FireClip;
+    public Transform m_FireTransform;
     public float m_MaxChargeTime = 0.75f;
     public float m_TargetingRadius = 1.5f;
     public LayerMask m_TankMask;

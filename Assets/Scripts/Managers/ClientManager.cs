@@ -14,12 +14,19 @@ public class ClientManager : MonoBehaviour
     public Canvas m_SettingsScreen;
     public Canvas m_StartScreen;
     public Canvas m_MapScreen;
+    public Text m_NameText;
+    public string name;
 
     private void Start() {
         m_InGameManager.gameObject.SetActive(false);
         m_MessageScreen.enabled = false;
         m_SettingsScreen.enabled = false;
         m_MapScreen.enabled = false;
-        // m_StartScreen.enabled = false;
+        m_StartScreen.enabled = false;
+        name = "Player";
+    }
+
+    public void SetName() {
+        name = m_NameText.text;
     }
 }

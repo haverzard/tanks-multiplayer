@@ -16,12 +16,14 @@ public class GameManager : NetworkBehaviour
     public MapManager[] m_Maps;
     public GameObject[] m_SoldierPrefabs;
     public InGameManager m_InGameManager;
+    public ClientManager m_ClientManager;
     public CashManager m_CashManager;
     [HideInInspector] [SyncVar (hook = "SetTanks")] public List<TankManager> m_Tanks;
 
     public Canvas m_MessageScreen;
     public Canvas m_SettingsScreen;
     public Canvas m_StartScreen;
+    public Canvas m_NameScreen;
     public Canvas m_MapScreen;
     public Button m_StartButton;
     public Button m_QuitButton;
@@ -34,7 +36,6 @@ public class GameManager : NetworkBehaviour
     private TankManager m_RoundWinner;
     private TankManager m_GameWinner;
     private int m_MapIdx = 0;
-    private ServerManager m_ServerManager;
 
     [Client]
     public void SetTanks(List<TankManager> oldVal, List<TankManager> newVal) {
@@ -43,17 +44,15 @@ public class GameManager : NetworkBehaviour
 
     private void Start() {
         isStarted = false;
-        m_ServerManager = ((ServerManager)NetworkManager.singleton);
+        m_NameScreen.enabled = false;
         m_InGameManager.gameObject.SetActive(false);
         
         for (int i = 0; i < m_Maps.Length; i++) {
-            // m_Maps[i].m_MapPrefab.SetActive(false);
             int mapIdx = i;
             m_Maps[i].m_MapButton.onClick.AddListener(() => StartGame(mapIdx));
         }
         m_Maps[0].m_MapPrefab.SetActive(true);
 
-        initSoldiers();
 
         m_MessageScreen.enabled = false;
         m_SettingsScreen.enabled = false;
@@ -62,6 +61,16 @@ public class GameManager : NetworkBehaviour
 
         m_StartButton.onClick.AddListener(ChooseMap);
         m_QuitButton.onClick.AddListener(QuitGame);
+    }
+
+    [ClientRpc]
+    public void SetName() {
+        for (int i = 0; i < m_Tanks.Count; i++) {
+            if (m_Tanks[i].isLocalPlayer) {
+                m_Tanks[i].SetName(m_ClientManager.name);
+                return;
+            }
+        }
     }
 
     public void Init() {
@@ -116,6 +125,13 @@ public class GameManager : NetworkBehaviour
     }
 
     [ClientRpc]
+    public void UpdateCash(int val, int owner) {
+        if (m_InGameManager.mine.m_PlayerNumber == owner) {
+            m_InGameManager.AddCash(val);
+        }
+    }
+
+    [ClientRpc]
     private void EnableMessage() {
         m_MessageScreen.enabled = true;
         m_InGameManager.SetActive(true);
@@ -129,21 +145,6 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     private void FlagStart() {
         isStarted = true;
-    }
-
-    private void initSoldiers() {
-        for (int i = 0; i < m_SoldierPrefabs.Length; i++) {
-            // m_SoldierPrefabs[i].GetComponent<AgentHealth>().m_InGameManager = m_InGameManager;
-            m_SoldierPrefabs[i].GetComponent<AgentBrain>().m_GameManager = this;
-        }
-
-        AgentBrain ab1 = m_SoldierPrefabs[0].GetComponent<AgentBrain>();
-        ab1.minDistance = 10f;
-        ab1.type = "infantry";
-
-        AgentBrain ab2 = m_SoldierPrefabs[1].GetComponent<AgentBrain>();
-        ab2.minDistance = 0f;
-        ab2.type = "bomber";
     }
 
     private IEnumerator GameLoop()

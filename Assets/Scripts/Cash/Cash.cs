@@ -5,15 +5,9 @@ using Mirror;
 
 public class Cash : NetworkBehaviour
 {
-    // [SyncVar (hook = "SetPosition")] public Vector3 m_Position;
+    public GameManager m_GameManager;
 
     private float m_MaxLifeTime = 20f;
-
-    // [Client]
-    // public void SetPosition(Vector3 oldVal, Vector3 newVal) {
-    //     transform.position = newVal;
-    //     gameObject.SetActive(true);
-    // }
 
     private void OnEnable()
     {
@@ -34,7 +28,7 @@ public class Cash : NetworkBehaviour
         if (!tm)
             return;
         RpcDisable();
-        tm.SetCash(tm.m_Cash+1);
+        m_GameManager.UpdateCash(tm.m_Cash+1, tm.m_PlayerNumber);
     }
 
     [Command]

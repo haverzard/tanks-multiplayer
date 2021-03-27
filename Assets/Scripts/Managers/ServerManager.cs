@@ -11,28 +11,43 @@ public class ServerManager : NetworkManager
     public GameManager m_GameManager;
     public CameraControl m_CameraControl;
     public List<TankManager> m_Tanks;
+    public ClientManager m_ClientManager;
+
+    private GameObject[] m_SoldierPrefabs;
+    private bool isLoaded;
 
     private void Start() {
-        // m_GameManager.m_Tanks = m_Tanks;
-        // m_GameManager.m_CashManager.gameObject.SetActive(true);
-        // m_GameManager.m_CashManager.Init();
-        // m_GameManager.m_CashManager.StartSpawn();
+        isLoaded = false;
+        m_SoldierPrefabs = m_GameManager.m_SoldierPrefabs;
+        for (int i = 0; i < m_SoldierPrefabs.Length; i++) {
+            m_SoldierPrefabs[i].GetComponent<AgentBrain>().m_GameManager = m_GameManager;
+        }
+
+        AgentBrain ab1 = m_SoldierPrefabs[0].GetComponent<AgentBrain>();
+        ab1.minDistance = 10f;
+        ab1.type = "infantry";
+
+        AgentBrain ab2 = m_SoldierPrefabs[1].GetComponent<AgentBrain>();
+        ab2.minDistance = 0f;
+        ab2.type = "bomber";
+        isLoaded = true;
     }
 
     public override void OnServerConnect(NetworkConnection conn)
     {
         SpawnTank(conn);
 
-        // m_Tanks[0].AddInfantry();
         if (m_Tanks.Count == 2)
         {
             m_GameManager.m_Tanks = m_Tanks;
+            m_GameManager.SetName();
             m_GameManager.Init();
         }
     }
 
     private void SpawnTank(NetworkConnection conn)
     {
+        while (!isLoaded) { }
         int player = m_Tanks.Count;
         Transform spawnPoint = m_GameManager.m_Maps[0].m_SpawnPoints[player];
         TankManager tank = 

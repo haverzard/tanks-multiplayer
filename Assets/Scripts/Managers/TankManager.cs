@@ -6,7 +6,7 @@ using Mirror;
 [Serializable]
 public class TankManager : NetworkBehaviour
 {
-    public Color m_PlayerColor;
+    [SyncVar (hook=nameof(SetPlayerColor))] public Color m_PlayerColor;
     public int m_InfantryPoolSize = 20;
     public int m_BomberPoolSize = 10;
     [HideInInspector] [SyncVar (hook=nameof(Setup))] public int m_PlayerNumber;
@@ -34,8 +34,8 @@ public class TankManager : NetworkBehaviour
         m_Infantries = new List<GameObject>();
         m_Bombers = new List<GameObject>();
 
-        m_Movement.m_PlayerNumber = m_PlayerNumber;
-        m_Shooting.m_PlayerNumber = m_PlayerNumber;
+        m_Movement.m_PlayerNumber = newNum;
+        m_Shooting.m_PlayerNumber = newNum;
 
         m_ColoredPlayerText = "<color=#" + ColorUtility.ToHtmlStringRGB(m_PlayerColor) + ">PLAYER " + m_PlayerNumber + "</color>";
 
@@ -45,11 +45,17 @@ public class TankManager : NetworkBehaviour
         {
             renderers[i].material.color = m_PlayerColor;
         }
-        m_Movement.enabled = true;
-        m_Shooting.enabled = true;
-
-        m_CanvasGameObject.SetActive(true);
     }
+
+    [Client]
+    public void SetPlayerColor(Color oldVal, Color newVal) {
+        m_PlayerColor = newVal;
+    }
+
+    // [Client]
+    // public void SetGameManager(GameManager oldVal, GameManager newVal) {
+    //     m_GameManager = newVal;
+    // }
 
     [Client]
     public void SetControl(bool oldVal, bool newVal)
@@ -58,13 +64,6 @@ public class TankManager : NetworkBehaviour
         m_Shooting.enabled = newVal;
 
         m_CanvasGameObject.SetActive(newVal);
-
-        for (int i = 0; i < m_Infantries.Count; i++) {
-            m_Infantries[i].SetActive(newVal);
-        }
-        for (int i = 0; i < m_Bombers.Count; i++) {
-            m_Bombers[i].SetActive(newVal);
-        }
     }
 
     [ClientRpc]
@@ -119,10 +118,10 @@ public class TankManager : NetworkBehaviour
     [ClientRpc]
     public void EnableControl()
     {
-        m_Movement.enabled = true;
+        GetComponent<TankMovement>().enabled = true;
         m_Shooting.enabled = true;
 
-        m_CanvasGameObject.SetActive(true);
+        // m_CanvasGameObject.SetActive(true);
     }
 
     [ClientRpc]

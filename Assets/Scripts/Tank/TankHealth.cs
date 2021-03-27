@@ -52,6 +52,11 @@ public class TankHealth : NetworkBehaviour
     {
         if (!isServer) return;
         RpcTakeDamage(amount);
+
+        if (m_CurrentHealth <= 0f && !m_Dead)
+        {
+            OnDeath();
+        }
     }
 
     [ClientRpc]
@@ -59,11 +64,6 @@ public class TankHealth : NetworkBehaviour
         m_CurrentHealth -= amount;
 
         SetHealthUI();
-
-        if (m_CurrentHealth <= 0f && !m_Dead)
-        {
-            OnDeath();
-        }
     }
 
 

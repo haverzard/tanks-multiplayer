@@ -268,7 +268,7 @@ public class GameManager : NetworkBehaviour
     {
         for (int i = 0; i < m_Tanks.Count; i++)
         {
-            m_Tanks[i].EnableControl();
+            m_Tanks[i].m_IsAlive = true;
         }
     }
 
@@ -277,7 +277,7 @@ public class GameManager : NetworkBehaviour
     {
         for (int i = 0; i < m_Tanks.Count; i++)
         {
-            m_Tanks[i].DisableControl();
+            m_Tanks[i].m_IsAlive = false;
         }
     }
 }

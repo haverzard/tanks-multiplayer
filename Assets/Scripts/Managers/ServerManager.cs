@@ -36,8 +36,7 @@ public class ServerManager : NetworkManager
         NetworkServer.AddPlayerForConnection(conn, tank.gameObject);
 
         tank.GetComponent<TankHealth>().m_GameManager = m_GameManager;
-        tank.m_PlayerColor = Random.ColorHSV(0, 1, 0.9f, 0.9f, 1f, 1f);
-                GameObject[] m_SoldierPrefabs = m_GameManager.m_SoldierPrefabs;
+        GameObject[] m_SoldierPrefabs = m_GameManager.m_SoldierPrefabs;
         for (int j = 0; j < tank.m_InfantryPoolSize; j++) {
             tank.m_Infantries.Add(null);
             tank.m_Infantries[j] = Instantiate(m_SoldierPrefabs[0], new Vector3(0,0,0), Quaternion.identity) as GameObject;
@@ -50,11 +49,13 @@ public class ServerManager : NetworkManager
             tank.m_Bombers[j].GetComponent<AgentBrain>().owner = player+1;
             tank.m_Bombers[j].SetActive(false);
         }
+        tank.m_PlayerColor = Random.ColorHSV(0, 1, 0.9f, 0.9f, 1f, 1f);
+        // tank.m_GameManager = m_GameManager;
         tank.m_PlayerNumber = player+1;
         tank.SetSpawnPoint(spawnPoint);
 
         tank.Reset();
-        tank.EnableControl();
+        tank.m_IsAlive = true;
 
         m_Tanks.Add(tank);
 

@@ -51,6 +51,7 @@ public class TankMovement : NetworkBehaviour
 
     private void Update()
     {
+        Debug.Log("OOF123");
         if (!isLocalPlayer) return;
         // Store the player's input and make sure the audio for the engine is playing.
         m_MovementInputValue = Input.GetAxis(m_MovementAxisName);

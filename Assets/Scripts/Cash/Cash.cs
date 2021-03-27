@@ -33,11 +33,6 @@ public class Cash : NetworkBehaviour
         m_GameManager.UpdateCash(temp + 1, tm.m_PlayerNumber);
     }
 
-    [Command]
-    public void Disable() {
-        RpcDisable();
-    }
-
     [ClientRpc]
     private void RpcDisable() {
         gameObject.SetActive(false);

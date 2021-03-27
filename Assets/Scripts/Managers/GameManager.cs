@@ -124,7 +124,6 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     public void UpdateUI(string type, int owner) {
         if (m_InGameManager.mine.m_PlayerNumber == owner) {
-            Debug.Log("halo");
             if (type == "infantry") {
                 m_InGameManager.RemoveInfantry(0);
             } else if (type == "bomber") {
@@ -135,7 +134,6 @@ public class GameManager : NetworkBehaviour
 
     [ClientRpc]
     public void UpdateCash(int val, int owner) {
-        Debug.Log("player + "+owner + "   "+m_InGameManager.mine.m_PlayerNumber);
         if (m_InGameManager.mine.m_PlayerNumber == owner) {
             m_InGameManager.AddCash(val, 0);
         }
@@ -244,7 +242,6 @@ public class GameManager : NetworkBehaviour
     {
         for (int i = 0; i < m_Tanks.Count; i++)
         {
-            Debug.Log(m_Tanks[i].m_IsAlive);
             if (m_Tanks[i].m_IsAlive)
                 return m_Tanks[i];
         }

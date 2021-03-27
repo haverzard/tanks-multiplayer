@@ -22,14 +22,12 @@ public class Cash : NetworkBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!isServer) return;
-        // Debug.Log("OOF");
         GameObject obj = other.gameObject;
         TankManager tm = obj.GetComponent<TankManager>();
 
         if (!tm)
             return;
         RpcDisable();
-        Debug.Log(tm.m_Cash);
         int temp = tm.m_Cash;
         tm.m_Cash = temp + 1;
         m_GameManager.UpdateCash(temp + 1, tm.m_PlayerNumber);

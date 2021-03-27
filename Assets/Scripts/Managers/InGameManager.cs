@@ -5,13 +5,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 
-public class InGameManager : NetworkBehaviour
+public class InGameManager : MonoBehaviour
 {
     public GameManager m_GameManager;
     public Text[] m_InfantryCounter;
     public Text[] m_BomberCounter;
     public Text[] m_CashCounter;
-    public int m_InitMoney = 5;
 
     public RectTransform m_InfoPanel;
     public Text m_HelpText;
@@ -20,27 +19,24 @@ public class InGameManager : NetworkBehaviour
     public Button m_PriceButton;
     public Button m_CloseButton;
 
+    [HideInInspector] public TankManager mine;
     [HideInInspector] public int numberOfPlayers;
 
     private List<bool> hasShotgun;
     private List<bool> hasAirstrike;
-    private List<int> infantryCounts;
-    private List<int> bomberCounts;
-    private List<int> cashCounts;
-    private TankManager mine;
+    [HideInInspector] public List<int> infantryCounts;
+    [HideInInspector] public List<int> bomberCounts;
 
     private void Start()
     {
         numberOfPlayers = 1;
         infantryCounts = new List<int>();
         bomberCounts = new List<int>();
-        cashCounts = new List<int>();
         hasShotgun = new List<bool>();
         hasAirstrike = new List<bool>();
         for (int i = 0; i < numberOfPlayers; i++) {
             infantryCounts.Add(0);
             bomberCounts.Add(0);
-            cashCounts.Add(m_InitMoney);
             hasShotgun.Add(false);
             hasAirstrike.Add(false);
             UpdateUI(i);
@@ -118,14 +114,10 @@ public class InGameManager : NetworkBehaviour
     }
 
     public void AddInfantry(int player) {
-        GameObject soldier = mine.GetAvailablePool("infantry");
-        if (soldier) {
-            soldier.transform.position = mine.gameObject.transform.position;
-            soldier.SetActive(true);
-            NetworkServer.Spawn(soldier);
-            infantryCounts[player]++;
-            UpdateUI(player);
-        }
+        mine.AddInfantry();
+        //     infantryCounts[player]++;
+        //     UpdateUI(player);
+        // }
     }
 
     public void AddBomber(int player) {
@@ -140,7 +132,7 @@ public class InGameManager : NetworkBehaviour
     }
 
     public void SetWeapon(int player, string weapon) {
-        mine.GetComponent<TankShooting>().m_Weapon = weapon;
+        mine.GetComponent<TankShooting>().SetWeapon(weapon);
     }
 
     public void RemoveInfantry(int player) {
@@ -153,16 +145,9 @@ public class InGameManager : NetworkBehaviour
         UpdateUI(player);
     }
 
-    public void AddCash(int player) {
-        if (cashCounts[player] < 9999999) {
-            cashCounts[player]++;
-            UpdateUI(player);
-        }
-    }
-
     public bool UseCash(int player, int amount) {
-        if (cashCounts[player] >= amount) {
-            cashCounts[player] -= amount;
+        if (mine.m_Cash >= amount) {
+            mine.m_Cash = mine.m_Cash - amount;
             UpdateUI(player);
             return true;
         }
@@ -172,6 +157,6 @@ public class InGameManager : NetworkBehaviour
     public void UpdateUI(int player) {
         m_InfantryCounter[player].text = infantryCounts[player]+" / 20";
         m_BomberCounter[player].text = bomberCounts[player]+" / 10";
-        m_CashCounter[player].text = cashCounts[player].ToString();
+        m_CashCounter[player].text = mine.m_Cash.ToString();
     }
 }

@@ -4314,7 +4314,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 219996030
-  serverOnly: 0
+  serverOnly: 1
   visible: 0
   m_AssetId: 
   hasSpawned: 0
@@ -6928,8 +6928,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96232a71ad26ca14096cb9cf869da8c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
   m_GameManager: {fileID: 169300124}
   m_InfantryCounter:
   - {fileID: 1410689514}
@@ -6940,13 +6938,13 @@ MonoBehaviour:
   m_CashCounter:
   - {fileID: 979037543}
   - {fileID: 308773105}
-  m_InitMoney: 500
   m_InfoPanel: {fileID: 199650202}
   m_HelpText: {fileID: 1515571253}
   m_PriceText: {fileID: 171567642}
   m_HelpButton: {fileID: 1429682653}
   m_PriceButton: {fileID: 1857753473}
   m_CloseButton: {fileID: 244465531}
+  mine: {fileID: 0}
   numberOfPlayers: 0
 --- !u!1 &1930063237
 GameObject:

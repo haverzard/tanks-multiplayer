@@ -35,25 +35,13 @@ public class TankHealth : NetworkBehaviour
         SetHealthUI();
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        Debug.Log("HIHI");
-        if (!isLocalPlayer) return;
-        GameObject obj = other.gameObject;
-        Cash cash = obj.GetComponent<Cash>();
-        Debug.Log("HEHE");
-        if (!cash)
-            return;
-        m_GameManager.m_InGameManager.AddCash(0);
-        cash.Disable();
-    }
-
     public void TakeDamage(float amount)
     {
         if (!isServer) return;
+        float temp = m_CurrentHealth;
         RpcTakeDamage(amount);
 
-        if (m_CurrentHealth <= 0f && !m_Dead)
+        if (temp - amount <= 0f && !m_Dead)
         {
             OnDeath();
         }

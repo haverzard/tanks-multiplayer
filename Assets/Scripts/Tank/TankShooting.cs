@@ -16,7 +16,7 @@ public class TankShooting : NetworkBehaviour
     public float m_MinLaunchForce = 15f; 
     public float m_MaxLaunchForce = 30f; 
     public float m_MaxChargeTime = 0.75f;
-    [SyncVar (hook="SetWeapon")] public string m_Weapon = "bazooka";
+    public string m_Weapon = "bazooka";
 
     private List<GameObject> bazookaShells;
     private List<GameObject> shotgunShells;
@@ -26,9 +26,14 @@ public class TankShooting : NetworkBehaviour
     private float m_ChargeSpeed;         
     private bool m_Fired;                
 
-    [Client]
-    public void SetWeapon(string oldVal, string newVal) {
-        m_Weapon = newVal;
+    [Command]
+    public void SetWeapon(string weapon) {
+        RpcSetWeapon(weapon);
+    }
+
+    [ClientRpc]
+    private void RpcSetWeapon(string weapon) {
+        m_Weapon = weapon;
     }
 
     private void OnEnable()
@@ -101,7 +106,8 @@ public class TankShooting : NetworkBehaviour
         {
             // at mac charge, not fired
             m_CurrentLaunchForce = m_MaxLaunchForce;
-            Fire();
+            IMForce(m_MaxLaunchForce);
+            IMFire();
         }
         else if (Input.GetButtonDown(m_FireButton))
         {
@@ -109,13 +115,13 @@ public class TankShooting : NetworkBehaviour
             m_Fired = false;
             m_CurrentLaunchForce = m_MinLaunchForce;
 
-            m_ShootingAudio.clip = m_ChargingClip;
-            m_ShootingAudio.Play();
+            IMSound();
         }
         else if (Input.GetButton(m_FireButton) && !m_Fired)
         {
             //Holding the fire button, not yet fired
             m_CurrentLaunchForce += m_ChargeSpeed * Time.deltaTime;
+            IMForce(m_CurrentLaunchForce);
 
             m_AimSlider.value = m_CurrentLaunchForce;
         }
@@ -145,6 +151,30 @@ public class TankShooting : NetworkBehaviour
         }
         return null;
     }
+
+    [Command]
+    private void IMForce(float force) {
+        Force(force);
+    }
+
+    [ClientRpc]
+    private void Force(float force)
+    {
+        m_CurrentLaunchForce = force;
+    }
+
+    [Command]
+    private void IMSound() {
+        Sound();
+    }
+
+    [ClientRpc]
+    private void Sound()
+    {
+        m_ShootingAudio.clip = m_ChargingClip;
+        m_ShootingAudio.Play();
+    }
+
 
     [Command]
     private void IMFire() {

@@ -20,6 +20,6 @@ public class ClientManager : MonoBehaviour
         m_MessageScreen.enabled = false;
         m_SettingsScreen.enabled = false;
         m_MapScreen.enabled = false;
-        m_StartScreen.enabled = false;
+        // m_StartScreen.enabled = false;
     }
 }

@@ -5,9 +5,15 @@ using Mirror;
 
 public class Cash : NetworkBehaviour
 {
-    public GameManager m_GameManager;
+    [SyncVar (hook = "SetPosition")] public Vector3 m_Position;
 
     private float m_MaxLifeTime = 20f;
+
+    [Client]
+    public void SetPosition(Vector3 oldVal, Vector3 newVal) {
+        transform.position = newVal;
+        gameObject.SetActive(true);
+    }
 
     private void OnEnable()
     {
@@ -16,8 +22,19 @@ public class Cash : NetworkBehaviour
 
     private void IMDisable() {
         if (!isServer) return;
-        Debug.Log("Fuk");
         RpcDisable();
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (!isServer) return;
+        RpcDisable();
+        GameObject obj = other.gameObject;
+        TankManager tm = obj.GetComponent<TankManager>();
+
+        if (!tm)
+            return;
+        tm.SetCash(tm.m_Cash+1);
     }
 
     [Command]

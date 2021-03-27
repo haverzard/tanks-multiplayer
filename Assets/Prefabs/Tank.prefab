@@ -1037,6 +1037,7 @@ MonoBehaviour:
   m_FullHealthColor: {r: 0, g: 1, b: 0, a: 1}
   m_ZeroHealthColor: {r: 1, g: 0, b: 0, a: 1}
   m_ExplosionPrefab: {fileID: 151086, guid: ee49a9a8678ecf8468eb488e1ac8d42b, type: 3}
+  m_GameManager: {fileID: 0}
 --- !u!114 &1485235700781091583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1130,12 +1131,18 @@ MonoBehaviour:
   m_PlayerColor: {r: 0, g: 0, b: 0, a: 0}
   m_InfantryPoolSize: 20
   m_BomberPoolSize: 10
+  m_Cash: 500
+  m_SoldierPrefabs:
+  - {fileID: 3801933341596216302, guid: dee2dca2489dab8489dfc31e91d37445, type: 3}
+  - {fileID: 3801933341596216302, guid: 463e549f62a326f49964245c42d9571b, type: 3}
   m_PlayerNumber: 0
+  m_IsAlive: 0
   m_ColoredPlayerText: 
   m_Wins: 0
   m_Infantries: []
   m_Bombers: []
   m_SpawnPoint: {fileID: 0}
+  m_GameManager: {fileID: 0}
 --- !u!1 &8723559368329462810
 GameObject:
   m_ObjectHideFlags: 0

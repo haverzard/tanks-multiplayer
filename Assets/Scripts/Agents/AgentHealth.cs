@@ -14,8 +14,8 @@ public class AgentHealth : NetworkBehaviour
     
     // private AudioSource m_ExplosionAudio;          
     // private ParticleSystem m_ExplosionParticles;   
-    private float m_CurrentHealth;  
-    private bool m_Dead;            
+    private float m_CurrentHealth;
+    private bool m_Dead;
 
 
     private void Awake()
@@ -38,7 +38,12 @@ public class AgentHealth : NetworkBehaviour
     public void TakeDamage(float amount)
     {
         if (!isServer) return;
-        RpcTakeDamage(amount);        
+        RpcTakeDamage(amount);     
+
+        if (m_CurrentHealth <= 0f && !m_Dead)
+        {
+            OnDeath();
+        }   
     }
 
     [ClientRpc]
@@ -46,12 +51,6 @@ public class AgentHealth : NetworkBehaviour
         m_CurrentHealth -= amount;
 
         SetHealthUI();
-
-        if (m_CurrentHealth <= 0f && !m_Dead)
-        {
-            gameObject.SetActive(false);
-            OnDeath();
-        }
     }
 
 
@@ -63,24 +62,20 @@ public class AgentHealth : NetworkBehaviour
         m_FillImage.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
     }
 
-    [Command]
+    [ClientRpc]
     private void OnDeath()
     {
-        // Play the effects for the death of the tank and deactivate it.
         m_Dead = true;
+        if (m_InGameManager.mine.isLocalPlayer) {
+            gameObject.SetActive(false);
 
-        // m_ExplosionParticles.transform.position = transform.position;
-        // m_ExplosionParticles.gameObject.SetActive(true);
-
-        // m_ExplosionParticles.Play();
-
-        // m_ExplosionAudio.Play();
-        string type = GetComponent<AgentBrain>().type;
-        int owner = GetComponent<AgentBrain>().owner;
-        if (type == "infantry") {
-            m_InGameManager.RemoveInfantry(owner-1);
-        } else if (type == "bomber") {
-            m_InGameManager.RemoveBomber(owner-1);
+            string type = GetComponent<AgentBrain>().type;
+            int owner = GetComponent<AgentBrain>().owner;
+            if (type == "infantry") {
+                m_InGameManager.RemoveInfantry(0);
+            } else if (type == "bomber") {
+                m_InGameManager.RemoveBomber(0);
+            }
         }
     }
 }

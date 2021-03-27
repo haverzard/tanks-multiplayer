@@ -9,6 +9,8 @@ public class TankManager : NetworkBehaviour
     [SyncVar (hook=nameof(SetPlayerColor))] public Color m_PlayerColor;
     public int m_InfantryPoolSize = 20;
     public int m_BomberPoolSize = 10;
+    public int m_Cash = 500;
+    public GameObject[] m_SoldierPrefabs;
     [HideInInspector] [SyncVar (hook=nameof(Setup))] public int m_PlayerNumber;
     [HideInInspector] [SyncVar (hook=nameof(SetControl))] public bool m_IsAlive;
     [HideInInspector] public string m_ColoredPlayerText;
@@ -24,10 +26,54 @@ public class TankManager : NetworkBehaviour
     private GameObject m_CanvasGameObject;
     private GameObject m_Object;
 
+    [Command]
+    public void AddInfantry() {
+        GameObject soldier = GetAvailablePool("infantry");
+        if (soldier) {
+            soldier.transform.position = gameObject.transform.position;
+            soldier.SetActive(true);
+            NetworkServer.Spawn(soldier);
+            // AddInfantryInGame();
+        }
+    }
+
+    [ClientRpc]
+    public void AddInfantryInGame() {
+        if (isLocalPlayer) {
+            m_GameManager.m_InGameManager.infantryCounts[0]++;
+            m_GameManager.m_InGameManager.UpdateUI(0);
+        }
+    }
+
+    // [Client]
+    // public void SetSoldiers(GameObject[] oldVal, GameObject[] newVal) {
+    //     m_SoldierPrefabs = newVal;
+    // }
+    //     for (int j = 0; j < m_InfantryPoolSize; j++) {
+    //         m_Infantries.Add(null);
+    //         m_Infantries[j] = Instantiate(m_SoldierPrefabs[0], new Vector3(0,0,0), Quaternion.identity) as GameObject;
+    //         m_Infantries[j].GetComponent<AgentBrain>().owner = player+1;
+    //         m_Infantries[j].SetActive(false);
+
+    //         GameObject soldier = m_Infantries[j];
+    //         NetworkServer.Spawn(soldier);
+    //     }
+    //     for (int j = 0; j < m_BomberPoolSize; j++) {
+    //         m_Bombers.Add(null);
+    //         m_Bombers[j] = Instantiate(m_SoldierPrefabs[1], new Vector3(0,0,0), Quaternion.identity) as GameObject;
+    //         m_Bombers[j].GetComponent<AgentBrain>().owner = player+1;
+    //         m_Bombers[j].SetActive(false);
+
+    //         GameObject soldier = m_Bombers[j];
+    //         NetworkServer.Spawn(soldier);
+    //     }
+    // }
+
     [Client]
     public void Setup(int oldNum, int newNum)
     {
         m_PlayerNumber = newNum;
+        m_Cash = 500;
         m_Movement = GetComponent<TankMovement>();
         m_Shooting = GetComponent<TankShooting>();
         m_CanvasGameObject = GetComponentInChildren<Canvas>().gameObject;
@@ -47,6 +93,42 @@ public class TankManager : NetworkBehaviour
         }
     }
 
+    // [Command]
+    // public void AddSoldiers() {        
+    //     for (int j = 0; j < m_InfantryPoolSize; j++) {
+    //         m_Infantries.Add(null);
+    //         m_Infantries[j] = Instantiate(m_SoldierPrefabs[0], new Vector3(0,0,0), Quaternion.identity) as GameObject;
+    //         m_Infantries[j].GetComponent<AgentBrain>().owner = m_PlayerNumber+1;
+    //         m_Infantries[j].SetActive(false);
+
+    //         GameObject soldier = m_Infantries[j];
+    //         NetworkServer.Spawn(soldier);
+    //     }
+    //     for (int j = 0; j < m_BomberPoolSize; j++) {
+    //         m_Bombers.Add(null);
+    //         m_Bombers[j] = Instantiate(m_SoldierPrefabs[1], new Vector3(0,0,0), Quaternion.identity) as GameObject;
+    //         m_Bombers[j].GetComponent<AgentBrain>().owner = m_PlayerNumber+1;
+    //         m_Bombers[j].SetActive(false);
+
+    //         GameObject soldier = m_Bombers[j];
+    //         NetworkServer.Spawn(soldier);
+    //     }
+    // }
+
+    [Command]
+    public void SetCash(int val) {
+        RpcSetCash(val);
+    }
+
+    [ClientRpc]
+    public void RpcSetCash(int val) {
+        if (isLocalPlayer) {
+            m_Cash = val;
+            m_GameManager.m_InGameManager.UpdateUI(0);            
+        }
+    }
+
+
     [Client]
     public void SetPlayerColor(Color oldVal, Color newVal) {
         m_PlayerColor = newVal;
@@ -63,7 +145,7 @@ public class TankManager : NetworkBehaviour
         m_Movement.enabled = newVal;
         m_Shooting.enabled = newVal;
 
-        m_CanvasGameObject.SetActive(newVal);
+        gameObject.SetActive(newVal);
     }
 
     [ClientRpc]
@@ -118,10 +200,10 @@ public class TankManager : NetworkBehaviour
     [ClientRpc]
     public void EnableControl()
     {
-        GetComponent<TankMovement>().enabled = true;
+        m_Movement.enabled = true;
         m_Shooting.enabled = true;
 
-        // m_CanvasGameObject.SetActive(true);
+        m_CanvasGameObject.SetActive(true);
     }
 
     [ClientRpc]

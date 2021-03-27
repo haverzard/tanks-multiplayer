@@ -17,7 +17,7 @@ public class GameManager : NetworkBehaviour
     public GameObject[] m_SoldierPrefabs;
     public InGameManager m_InGameManager;
     public CashManager m_CashManager;
-    [HideInInspector] public List<TankManager> m_Tanks;
+    [HideInInspector] [SyncVar (hook = "SetTanks")] public List<TankManager> m_Tanks;
 
     public Canvas m_MessageScreen;
     public Canvas m_SettingsScreen;
@@ -35,6 +35,11 @@ public class GameManager : NetworkBehaviour
     private TankManager m_GameWinner;
     private int m_MapIdx = 0;
     private ServerManager m_ServerManager;
+
+    [Client]
+    public void SetTanks(List<TankManager> oldVal, List<TankManager> newVal) {
+        m_Tanks = newVal;
+    }
 
     private void Start() {
         isStarted = false;
@@ -90,6 +95,7 @@ public class GameManager : NetworkBehaviour
         m_EndWait = new WaitForSeconds (m_EndDelay);
 
         isStarted = true;
+        m_CashManager.Init();
         EnableMessage();
         FlagStart();
 
@@ -175,8 +181,6 @@ public class GameManager : NetworkBehaviour
 
     private IEnumerator RoundEnding()
     {
-        DisableTankControl();
-
         m_CashManager.StopSpawn();
 
         m_InGameManager.SetActive(false);
@@ -184,6 +188,8 @@ public class GameManager : NetworkBehaviour
         m_RoundWinner = null;
 
         m_RoundWinner = GetRoundWinner();
+
+        DisableTankControl();
 
         if (m_RoundWinner != null)
             m_RoundWinner.m_Wins++;
@@ -205,7 +211,6 @@ public class GameManager : NetworkBehaviour
             if (m_Tanks[i].m_IsAlive)
                 numTanksLeft++;
         }
-        Debug.Log(numTanksLeft);
 
         return numTanksLeft <= 1;
     }
@@ -215,7 +220,8 @@ public class GameManager : NetworkBehaviour
     {
         for (int i = 0; i < m_Tanks.Count; i++)
         {
-            if (m_Tanks[i].gameObject.activeSelf)
+            Debug.Log(m_Tanks[i].m_IsAlive);
+            if (m_Tanks[i].m_IsAlive)
                 return m_Tanks[i];
         }
 

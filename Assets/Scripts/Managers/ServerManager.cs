@@ -13,7 +13,6 @@ public class ServerManager : NetworkManager
     public List<TankManager> m_Tanks;
 
     private void Start() {
-        m_GameManager.m_Tanks = m_Tanks;
     }
 
     public override void OnServerConnect(NetworkConnection conn)
@@ -23,6 +22,7 @@ public class ServerManager : NetworkManager
         if (m_Tanks.Count == 2)
         {
             m_GameManager.Init();
+            m_GameManager.m_Tanks = m_Tanks;
         }
     }
 
@@ -50,7 +50,6 @@ public class ServerManager : NetworkManager
             tank.m_Bombers[j].SetActive(false);
         }
         tank.m_PlayerColor = Random.ColorHSV(0, 1, 0.9f, 0.9f, 1f, 1f);
-        // tank.m_GameManager = m_GameManager;
         tank.m_PlayerNumber = player+1;
         tank.SetSpawnPoint(spawnPoint);
 

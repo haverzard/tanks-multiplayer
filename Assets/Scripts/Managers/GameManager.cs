@@ -63,10 +63,17 @@ public class GameManager : NetworkBehaviour
         m_QuitButton.onClick.AddListener(QuitGame);
     }
 
+    [Server]
+    public void CmdSetName() {
+        SetName();
+    }
+
     [ClientRpc]
     public void SetName() {
         for (int i = 0; i < m_Tanks.Count; i++) {
+            Debug.Log("NAME "+m_ClientManager.name);
             if (m_Tanks[i].isLocalPlayer) {
+                Debug.Log(m_ClientManager.name);
                 m_Tanks[i].SetName(m_ClientManager.name);
                 return;
             }
@@ -125,9 +132,10 @@ public class GameManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void UpdateCash(int val, int owner) {
+    public void UpdateCash(int owner) {
+        Debug.Log("player + "+owner + "   "+m_InGameManager.mine.m_PlayerNumber);
         if (m_InGameManager.mine.m_PlayerNumber == owner) {
-            m_InGameManager.AddCash(val);
+            m_InGameManager.UpdateUI(0);
         }
     }
 

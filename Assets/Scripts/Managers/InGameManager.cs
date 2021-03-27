@@ -134,7 +134,7 @@ public class InGameManager : MonoBehaviour
 
     public bool UseCash(int player, int amount) {
         if (mine.m_Cash >= amount) {
-            mine.m_Cash = mine.m_Cash - amount;
+            mine.SetCash(mine.m_Cash - amount);
             UpdateUI(player);
             return true;
         }

@@ -4890,7 +4890,7 @@ MonoBehaviour:
     m_MinZ: 0
     m_MaxX: 0
     m_MaxZ: 0
-  m_GameManager: {fileID: 0}
+  m_GameManager: {fileID: 169300124}
   m_Coins: []
 --- !u!114 &1250278722
 MonoBehaviour:

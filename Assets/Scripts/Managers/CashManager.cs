@@ -14,6 +14,7 @@ public class CashManager : NetworkBehaviour
     private int m_CoinCounts = 5;
     private Coroutine coroutine;
 
+    [Server]
     public void Init()
     {
         m_CoinPrefab.GetComponent<Cash>().m_GameManager = m_GameManager;
@@ -60,6 +61,7 @@ public class CashManager : NetworkBehaviour
                 coin.transform.position = pos;
                 coin.SetActive(true);
                 NetworkServer.Spawn(coin);
+                ShowToMe(coin);
             }
         }
         coroutine = StartCoroutine(SpawnCoins());

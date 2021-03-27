@@ -39,10 +39,14 @@ public class ServerManager : NetworkManager
 
         if (m_Tanks.Count == 2)
         {
-            m_GameManager.m_Tanks = m_Tanks;
-            m_GameManager.SetName();
-            m_GameManager.Init();
+            Invoke("Init", 1f);
         }
+    }
+
+    public void Init() {
+        m_GameManager.m_Tanks = m_Tanks;
+        m_GameManager.CmdSetName();
+        m_GameManager.Init();
     }
 
     private void SpawnTank(NetworkConnection conn)
@@ -53,6 +57,7 @@ public class ServerManager : NetworkManager
         TankManager tank = 
             Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation).GetComponent<TankManager>();
 
+        m_Tanks.Add(tank);
         NetworkServer.AddPlayerForConnection(conn, tank.gameObject);
 
         tank.GetComponent<TankHealth>().m_GameManager = m_GameManager;
@@ -80,9 +85,6 @@ public class ServerManager : NetworkManager
 
         tank.Reset();
         tank.m_IsAlive = true;
-
-        m_Tanks.Add(tank);
-        Debug.Log(tank.m_Infantries.Count);
 
         tank.RpcSetCamera();
     }

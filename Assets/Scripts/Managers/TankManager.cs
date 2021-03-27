@@ -9,7 +9,7 @@ public class TankManager : NetworkBehaviour
     [SyncVar (hook=nameof(SetPlayerColor))] public Color m_PlayerColor;
     public int m_InfantryPoolSize = 20;
     public int m_BomberPoolSize = 10;
-    public int m_Cash = 500;
+    [SyncVar (hook=nameof(SetCash))] public int m_Cash;
     public GameObject[] m_SoldierPrefabs;
     [HideInInspector] [SyncVar (hook=nameof(Setup))] public int m_PlayerNumber;
     [HideInInspector] [SyncVar (hook=nameof(SetControl))] public bool m_IsAlive;
@@ -35,6 +35,11 @@ public class TankManager : NetworkBehaviour
             NetworkServer.Spawn(soldier);
             ShowToMe(soldier);
         }
+    }
+
+    [Command]
+    public void SetCash(int val) {
+        m_Cash = val;
     }
 
     [ClientRpc]
@@ -104,6 +109,13 @@ public class TankManager : NetworkBehaviour
         }
         return null;
     }
+
+    [Client]
+    public void SetCash(int oldVal, int newVal)
+    {
+        m_Cash = newVal;
+    }
+
 
     [ClientRpc]
     public void SetSpawnPoint(Transform t)

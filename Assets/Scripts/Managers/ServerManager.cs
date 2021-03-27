@@ -38,7 +38,7 @@ public class ServerManager : NetworkManager
         if (!m_GameManager.isStarted) {
             SpawnTank(conn);
 
-            if (m_Tanks.Count == 2 && !m_GameManager.isStarted)
+            if (m_Tanks.Count == 3 && !m_GameManager.isStarted)
             {
                 Invoke("Init", 1f);
             }

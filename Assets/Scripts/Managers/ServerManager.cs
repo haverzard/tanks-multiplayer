@@ -35,11 +35,13 @@ public class ServerManager : NetworkManager
 
     public override void OnServerConnect(NetworkConnection conn)
     {
-        SpawnTank(conn);
+        if (!m_GameManager.isStarted) {
+            SpawnTank(conn);
 
-        if (m_Tanks.Count == 2)
-        {
-            Invoke("Init", 1f);
+            if (m_Tanks.Count == 3 && !m_GameManager.isStarted)
+            {
+                Invoke("Init", 1f);
+            }
         }
     }
 

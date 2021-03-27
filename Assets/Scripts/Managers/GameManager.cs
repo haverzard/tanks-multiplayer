@@ -83,6 +83,9 @@ public class GameManager : NetworkBehaviour
 
     public void Init() {
         m_StartScreen.enabled = true;
+        m_StartButton.enabled = true;
+        m_QuitButton.enabled = true;
+        DisableMessage();
     }
 
     private void QuitGame() {
@@ -107,6 +110,7 @@ public class GameManager : NetworkBehaviour
 
         for (int i = 0; i < m_Tanks.Count; i++) {
             m_Tanks[i].SetSpawnPoint(m_Maps[m_MapIdx].m_SpawnPoints[i]);
+            m_Tanks[i].m_Cash = 5;
         }
 
         m_StartWait = new WaitForSeconds (m_StartDelay);
@@ -146,6 +150,12 @@ public class GameManager : NetworkBehaviour
     }
 
     [ClientRpc]
+    private void DisableMessage() {
+        m_MessageScreen.enabled = false;
+        m_InGameManager.SetActive(false);
+    }
+
+    [ClientRpc]
     private void ShowMessage(string t) {
         m_MessageText.text = t;
     }
@@ -163,7 +173,7 @@ public class GameManager : NetworkBehaviour
 
         if (m_GameWinner != null)
         {
-            SceneManager.LoadScene(0);
+            Init();
         }
         else
         {

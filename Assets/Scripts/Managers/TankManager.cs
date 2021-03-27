@@ -56,7 +56,7 @@ public class TankManager : NetworkBehaviour
     public void Setup(int oldNum, int newNum)
     {
         m_PlayerNumber = newNum;
-        m_Cash = 500;
+        m_Cash = 5;
         m_Movement = GetComponent<TankMovement>();
         m_Shooting = GetComponent<TankShooting>();
         m_CanvasGameObject = GetComponentInChildren<Canvas>().gameObject;

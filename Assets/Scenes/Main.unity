@@ -1176,8 +1176,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1766806657}
-        m_MethodName: SetActive
+      - m_Target: {fileID: 1502635451}
+        m_MethodName: set_enabled
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1831,6 +1831,7 @@ MonoBehaviour:
   m_InGameManager: {fileID: 1903534929}
   m_MessageScreen: {fileID: 1729599181}
   m_SettingsScreen: {fileID: 1766806660}
+  m_CreditsScreen: {fileID: 1502635451}
   m_StartScreen: {fileID: 1464431747}
   m_MapScreen: {fileID: 26609509}
   m_NameText: {fileID: 596799909}
@@ -5835,27 +5836,13 @@ GameObject:
   - component: {fileID: 1502635451}
   - component: {fileID: 1502635450}
   - component: {fileID: 1502635449}
-  - component: {fileID: 1502635448}
   m_Layer: 5
   m_Name: CreditsCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1502635448
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1502635447}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74d14ab6e049b9348bdc968343f20b0c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  masterMixer: {fileID: 24100000, guid: b9607f1f2ca4c40478efd0932806434b, type: 2}
+  m_IsActive: 1
 --- !u!114 &1502635449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6510,8 +6497,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1502635447}
-        m_MethodName: SetActive
+      - m_Target: {fileID: 1502635451}
+        m_MethodName: set_enabled
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7122,7 +7109,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1729599178
 RectTransform:
   m_ObjectHideFlags: 0

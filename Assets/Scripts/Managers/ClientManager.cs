@@ -12,6 +12,7 @@ public class ClientManager : MonoBehaviour
 
     public Canvas m_MessageScreen;
     public Canvas m_SettingsScreen;
+    public Canvas m_CreditsScreen;
     public Canvas m_StartScreen;
     public Canvas m_MapScreen;
     public Text m_NameText;
@@ -21,6 +22,7 @@ public class ClientManager : MonoBehaviour
         m_InGameManager.gameObject.SetActive(false);
         m_MessageScreen.enabled = false;
         m_SettingsScreen.enabled = false;
+        m_CreditsScreen.enabled = false;
         m_MapScreen.enabled = false;
         m_StartScreen.enabled = false;
         name = "Player";

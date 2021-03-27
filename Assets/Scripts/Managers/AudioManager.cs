@@ -9,7 +9,7 @@ public class AudioManager : MonoBehaviour
     public AudioMixer masterMixer;
 
     private void Update() {
-        if (Input.GetKeyDown(KeyCode.M)) {
+        if (Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.LeftControl)) {
             gameObject.GetComponent<Canvas>().enabled = true;
         }
     }

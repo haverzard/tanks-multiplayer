@@ -13,14 +13,14 @@ public class CashManager : NetworkBehaviour
     private int m_CoinCounts = 5;
     private Coroutine coroutine;
 
-    [Server]
     public void Init()
     {
         if (m_Coins.Count != 0) return;
+        GameObject coin;
         for (int i = 0; i < 50; i++) {
-            m_Coins.Add(null);
-            m_Coins[i] = Instantiate(m_CoinPrefab, new Vector3(0,0,0), Quaternion.identity) as GameObject;
-            m_Coins[i].SetActive(false);
+            coin = Instantiate(m_CoinPrefab, new Vector3(0,0,0), Quaternion.identity);
+            m_Coins.Add(coin);
+            coin.SetActive(false);
         }
     }
 
@@ -33,14 +33,18 @@ public class CashManager : NetworkBehaviour
     }
 
     public GameObject GetAvailablePool() {
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < m_Coins.Count; i++) {
             if (m_Coins[i].activeSelf) continue;
             return m_Coins[i];
         }
         return null;
     }
 
-    [Server]
+    [ClientRpc]
+    public void ShowToMe(GameObject coin) {
+        coin.SetActive(true);
+    }
+
     private IEnumerator SpawnCoins()
     {
         yield return new WaitForSeconds(2f);
@@ -48,14 +52,12 @@ public class CashManager : NetworkBehaviour
         for (int i = 0; i < m_CoinCounts; i++) {
             GameObject coin = GetAvailablePool();
             if (coin) {
-                Debug.Log("HIII");
-                float x = Random.Range(35, 40);
-                float z = Random.Range(25, 30);
+                float x = Random.Range(m_MapManager.m_MinX, m_MapManager.m_MaxX);
+                float z = Random.Range(m_MapManager.m_MinZ, m_MapManager.m_MaxZ);
                 Vector3 pos = new Vector3(x, 0, z);
                 coin.transform.position = pos;
                 coin.SetActive(true);
                 NetworkServer.Spawn(coin);
-                // coin.transform.position = pos;
             }
         }
         coroutine = StartCoroutine(SpawnCoins());

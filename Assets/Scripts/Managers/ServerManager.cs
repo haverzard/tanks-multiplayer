@@ -14,6 +14,9 @@ public class ServerManager : NetworkManager
 
     private void Start() {
         // m_GameManager.m_Tanks = m_Tanks;
+        // m_GameManager.m_CashManager.gameObject.SetActive(true);
+        // m_GameManager.m_CashManager.Init();
+        // m_GameManager.m_CashManager.StartSpawn();
     }
 
     public override void OnServerConnect(NetworkConnection conn)
@@ -23,8 +26,8 @@ public class ServerManager : NetworkManager
         // m_Tanks[0].AddInfantry();
         if (m_Tanks.Count == 2)
         {
-            m_GameManager.Init();
             m_GameManager.m_Tanks = m_Tanks;
+            m_GameManager.Init();
         }
     }
 

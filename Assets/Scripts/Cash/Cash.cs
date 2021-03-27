@@ -25,15 +25,15 @@ public class Cash : NetworkBehaviour
         RpcDisable();
     }
 
-    private void OnCollisionEnter(Collision other)
+    private void OnTriggerEnter(Collider other)
     {
         if (!isServer) return;
-        RpcDisable();
         GameObject obj = other.gameObject;
         TankManager tm = obj.GetComponent<TankManager>();
 
         if (!tm)
             return;
+        RpcDisable();
         tm.SetCash(tm.m_Cash+1);
     }
 

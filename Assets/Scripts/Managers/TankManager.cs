@@ -101,17 +101,14 @@ public class TankManager : NetworkBehaviour
         // }
     }
 
-    [Command]
+    [Client]
     public void SetCash(int val) {
-        RpcSetCash(val);
+        m_Cash = val;
+        m_GameManager.m_InGameManager.UpdateUI(0);
     }
 
     [ClientRpc]
     public void RpcSetCash(int val) {
-        if (isLocalPlayer) {
-            m_Cash = val;
-            m_GameManager.m_InGameManager.UpdateUI(0);            
-        }
     }
 
 

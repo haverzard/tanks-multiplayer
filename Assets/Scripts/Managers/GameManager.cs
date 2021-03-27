@@ -121,6 +121,7 @@ public class GameManager : NetworkBehaviour
         m_CashManager.Init();
         EnableMessage();
         FlagStart();
+        ResetWeapon();
 
         StartCoroutine(GameLoop());
     }

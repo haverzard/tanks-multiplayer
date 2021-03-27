@@ -121,6 +121,7 @@ public class GameManager : NetworkBehaviour
         m_CashManager.Init();
         EnableMessage();
         FlagStart();
+        ResetWinTanks();
 
         StartCoroutine(GameLoop());
     }
@@ -298,7 +299,6 @@ public class GameManager : NetworkBehaviour
         for (int i = 0; i < m_Tanks.Count; i++)
         {
             m_Tanks[i].m_Wins = 0;
-            m_Tanks[i].ResetWin();
         }
     }
 

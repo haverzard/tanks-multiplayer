@@ -136,6 +136,12 @@ public class TankManager : NetworkBehaviour
     }
 
     [ClientRpc]
+    public void ResetWin()
+    {
+        m_Wins = 0;
+    }
+
+    [ClientRpc]
     public void Reset()
     {
         transform.position = m_SpawnPoint.position;

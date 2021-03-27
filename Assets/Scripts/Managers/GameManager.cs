@@ -86,6 +86,7 @@ public class GameManager : NetworkBehaviour
         m_StartButton.enabled = true;
         m_QuitButton.enabled = true;
         DisableMessage();
+        ResetWeapon();
     }
 
     private void QuitGame() {
@@ -141,6 +142,12 @@ public class GameManager : NetworkBehaviour
         if (m_InGameManager.mine.m_PlayerNumber == owner) {
             m_InGameManager.AddCash(val, 0);
         }
+    }
+
+
+    [ClientRpc]
+    private void ResetWeapon() {
+        m_InGameManager.ResetWeapon();
     }
 
     [ClientRpc]
@@ -292,6 +299,13 @@ public class GameManager : NetworkBehaviour
         return message; 
     }
 
+    private void ResetWinTanks()
+    {
+        for (int i = 0; i < m_Tanks.Count; i++)
+        {
+            m_Tanks[i].ResetWin();
+        }
+    }
 
     private void ResetAllTanks()
     {

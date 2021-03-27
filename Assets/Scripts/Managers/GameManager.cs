@@ -132,10 +132,10 @@ public class GameManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void UpdateCash(int owner) {
+    public void UpdateCash(int val, int owner) {
         Debug.Log("player + "+owner + "   "+m_InGameManager.mine.m_PlayerNumber);
         if (m_InGameManager.mine.m_PlayerNumber == owner) {
-            m_InGameManager.UpdateUI(0);
+            m_InGameManager.AddCash(val, 0);
         }
     }
 

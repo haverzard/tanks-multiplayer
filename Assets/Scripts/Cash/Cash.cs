@@ -32,7 +32,7 @@ public class Cash : NetworkBehaviour
         Debug.Log(tm.m_Cash);
         int temp = tm.m_Cash;
         tm.m_Cash = temp + 1;
-        m_GameManager.UpdateCash(tm.m_PlayerNumber);
+        m_GameManager.UpdateCash(temp + 1, tm.m_PlayerNumber);
     }
 
     [Command]

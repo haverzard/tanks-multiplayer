@@ -18,6 +18,7 @@ public class InGameManager : MonoBehaviour
     public Button m_HelpButton;
     public Button m_PriceButton;
     public Button m_CloseButton;
+    public int m_TempCash;
 
     [HideInInspector] public TankManager mine;
     [HideInInspector] public int numberOfPlayers;
@@ -75,6 +76,7 @@ public class InGameManager : MonoBehaviour
         for (int i = 0; i < m_GameManager.m_Tanks.Count; i++) {
             if (m_GameManager.m_Tanks[i].GetComponent<NetworkIdentity>().isLocalPlayer) {
                 mine = m_GameManager.m_Tanks[i];
+                m_TempCash = mine.m_Cash;
                 break;
             }
         }
@@ -127,14 +129,15 @@ public class InGameManager : MonoBehaviour
         UpdateUI(player);
     }
 
-    public void AddCash(int val) {
-        mine.m_Cash = val;
-        UpdateUI(0);
+    public void AddCash(int val, int player) {
+        m_TempCash = val;
+        UpdateUI(player);
     }
 
     public bool UseCash(int player, int amount) {
         if (mine.m_Cash >= amount) {
             mine.SetCash(mine.m_Cash - amount);
+            m_TempCash = mine.m_Cash - amount;
             UpdateUI(player);
             return true;
         }
@@ -144,6 +147,6 @@ public class InGameManager : MonoBehaviour
     public void UpdateUI(int player) {
         m_InfantryCounter[player].text = infantryCounts[player]+" / 20";
         m_BomberCounter[player].text = bomberCounts[player]+" / 10";
-        m_CashCounter[player].text = mine.m_Cash.ToString();
+        m_CashCounter[player].text = m_TempCash.ToString();
     }
 }

@@ -48,17 +48,26 @@ Aplikasi yang dibuat adalah game multiplayer dengan fitur-fitur tambahan dari tu
 
 7. Pada game ini, tank bisa mendorong karakter dan tank lawan.
 
+![Collision](./Images/Collision.png)
+
 8. Mainlah sampai 5 ronde dan player yang memenangkan ronde terbanyak adalah pemenangnya.
 
 ## Library and Asset
 
 1. Mirror
+
 Mirror digunakan sebagai library untuk multiplayer
+
 2. Cash Prefab: https://assetstore.unity.com/packages/3d/props/gold-coins-1810
+
 Prefab ini digunakan sebagai model gold
+
 3. Character Animation: https://assetstore.unity.com/packages/3d/animations/melee-axe-pack-35320
+
 Animation ini digunakan sebagai animasi untuk kedua karakter pada game
+
 4. Character Prefab: https://assetstore.unity.com/packages/3d/characters/robots/robot-soldier-142438
+
 Prefab ini digunakan sebagai model untuk karakter
 
 ## Pembagian Kerja Kelompok

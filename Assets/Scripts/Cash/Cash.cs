@@ -5,15 +5,15 @@ using Mirror;
 
 public class Cash : NetworkBehaviour
 {
-    [SyncVar (hook = "SetPosition")] public Vector3 m_Position;
+    // [SyncVar (hook = "SetPosition")] public Vector3 m_Position;
 
     private float m_MaxLifeTime = 20f;
 
-    [Client]
-    public void SetPosition(Vector3 oldVal, Vector3 newVal) {
-        transform.position = newVal;
-        gameObject.SetActive(true);
-    }
+    // [Client]
+    // public void SetPosition(Vector3 oldVal, Vector3 newVal) {
+    //     transform.position = newVal;
+    //     gameObject.SetActive(true);
+    // }
 
     private void OnEnable()
     {

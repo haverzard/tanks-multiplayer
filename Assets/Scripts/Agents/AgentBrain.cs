@@ -23,7 +23,7 @@ public class AgentBrain : NetworkBehaviour
     private void Update()
     {
         if (!isServer) return;
-        if (m_GameManager.m_Tanks[0].gameObject != null) {
+        if (m_GameManager.m_Tanks.Count != 0 && m_GameManager.m_Tanks[0].gameObject != null) {
             GameObject closest = null;
             float d = float.MaxValue;
             for (int i = 0; i < m_GameManager.m_Tanks.Count; i++) {

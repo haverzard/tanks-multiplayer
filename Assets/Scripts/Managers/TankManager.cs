@@ -27,22 +27,19 @@ public class TankManager : NetworkBehaviour
     private GameObject m_Object;
 
     [Command]
-    public void AddInfantry() {
-        GameObject soldier = GetAvailablePool("infantry");
+    public void AddSoldier(string type) {
+        GameObject soldier = GetAvailablePool(type);
         if (soldier) {
             soldier.transform.position = gameObject.transform.position;
             soldier.SetActive(true);
             NetworkServer.Spawn(soldier);
-            // AddInfantryInGame();
+            ShowToMe(soldier);
         }
     }
 
     [ClientRpc]
-    public void AddInfantryInGame() {
-        if (isLocalPlayer) {
-            m_GameManager.m_InGameManager.infantryCounts[0]++;
-            m_GameManager.m_InGameManager.UpdateUI(0);
-        }
+    public void ShowToMe(GameObject soldier) {
+        soldier.SetActive(true);
     }
 
     // [Client]
@@ -77,8 +74,6 @@ public class TankManager : NetworkBehaviour
         m_Movement = GetComponent<TankMovement>();
         m_Shooting = GetComponent<TankShooting>();
         m_CanvasGameObject = GetComponentInChildren<Canvas>().gameObject;
-        m_Infantries = new List<GameObject>();
-        m_Bombers = new List<GameObject>();
 
         m_Movement.m_PlayerNumber = newNum;
         m_Shooting.m_PlayerNumber = newNum;
@@ -91,29 +86,20 @@ public class TankManager : NetworkBehaviour
         {
             renderers[i].material.color = m_PlayerColor;
         }
+
+        // for (int j = 0; j < tank.m_InfantryPoolSize; j++) {
+        //     tank.m_Infantries.Add(null);
+        //     tank.m_Infantries[j] = Instantiate(m_SoldierPrefabs[0], new Vector3(0,0,0), Quaternion.identity) as GameObject;
+        //     tank.m_Infantries[j].GetComponent<AgentBrain>().owner = player+1;
+        //     tank.m_Infantries[j].SetActive(false);
+        // }
+        // for (int j = 0; j < tank.m_BomberPoolSize; j++) {
+        //     tank.m_Bombers.Add(null);
+        //     tank.m_Bombers[j] = Instantiate(m_SoldierPrefabs[1], new Vector3(0,0,0), Quaternion.identity) as GameObject;
+        //     tank.m_Bombers[j].GetComponent<AgentBrain>().owner = player+1;
+        //     tank.m_Bombers[j].SetActive(false);
+        // }
     }
-
-    // [Command]
-    // public void AddSoldiers() {        
-    //     for (int j = 0; j < m_InfantryPoolSize; j++) {
-    //         m_Infantries.Add(null);
-    //         m_Infantries[j] = Instantiate(m_SoldierPrefabs[0], new Vector3(0,0,0), Quaternion.identity) as GameObject;
-    //         m_Infantries[j].GetComponent<AgentBrain>().owner = m_PlayerNumber+1;
-    //         m_Infantries[j].SetActive(false);
-
-    //         GameObject soldier = m_Infantries[j];
-    //         NetworkServer.Spawn(soldier);
-    //     }
-    //     for (int j = 0; j < m_BomberPoolSize; j++) {
-    //         m_Bombers.Add(null);
-    //         m_Bombers[j] = Instantiate(m_SoldierPrefabs[1], new Vector3(0,0,0), Quaternion.identity) as GameObject;
-    //         m_Bombers[j].GetComponent<AgentBrain>().owner = m_PlayerNumber+1;
-    //         m_Bombers[j].SetActive(false);
-
-    //         GameObject soldier = m_Bombers[j];
-    //         NetworkServer.Spawn(soldier);
-    //     }
-    // }
 
     [Command]
     public void SetCash(int val) {
@@ -146,6 +132,15 @@ public class TankManager : NetworkBehaviour
         m_Shooting.enabled = newVal;
 
         gameObject.SetActive(newVal);
+
+        if (!newVal) {
+            for (int i = 0; i < m_Infantries.Count; i++) {
+                m_Infantries[i].SetActive(false);
+            }
+            for (int i = 0; i < m_Bombers.Count; i++) {
+                m_Bombers[i].SetActive(false);
+            }
+        }
     }
 
     [ClientRpc]
@@ -156,12 +151,6 @@ public class TankManager : NetworkBehaviour
 
         m_CanvasGameObject.SetActive(false);
 
-        for (int i = 0; i < m_Infantries.Count; i++) {
-            m_Infantries[i].SetActive(false);
-        }
-        for (int i = 0; i < m_Bombers.Count; i++) {
-            m_Bombers[i].SetActive(false);
-        }
     }
 
     public GameObject GetAvailablePool(string type) {

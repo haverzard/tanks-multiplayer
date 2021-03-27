@@ -102,6 +102,19 @@ public class GameManager : NetworkBehaviour
         StartCoroutine(GameLoop());
     }
 
+
+    [ClientRpc]
+    public void UpdateUI(string type, int owner) {
+        if (m_InGameManager.mine.m_PlayerNumber == owner) {
+            Debug.Log("halo");
+            if (type == "infantry") {
+                m_InGameManager.RemoveInfantry(0);
+            } else if (type == "bomber") {
+                m_InGameManager.RemoveBomber(0);
+            }
+        }
+    }
+
     [ClientRpc]
     private void EnableMessage() {
         m_MessageScreen.enabled = true;
@@ -120,7 +133,7 @@ public class GameManager : NetworkBehaviour
 
     private void initSoldiers() {
         for (int i = 0; i < m_SoldierPrefabs.Length; i++) {
-            m_SoldierPrefabs[i].GetComponent<AgentHealth>().m_InGameManager = m_InGameManager;
+            // m_SoldierPrefabs[i].GetComponent<AgentHealth>().m_InGameManager = m_InGameManager;
             m_SoldierPrefabs[i].GetComponent<AgentBrain>().m_GameManager = this;
         }
 

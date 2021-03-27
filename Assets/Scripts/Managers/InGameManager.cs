@@ -82,14 +82,10 @@ public class InGameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R) && UseCash(0, 2)) {
+        if (Input.GetKeyDown(KeyCode.R) && infantryCounts[0] < 20 && UseCash(0, 2)) {
             AddInfantry(0);
-        } else if (Input.GetKeyDown(KeyCode.F) && UseCash(0, 5)) {
+        } else if (Input.GetKeyDown(KeyCode.F) && bomberCounts[0] < 10 && UseCash(0, 5)) {
             AddBomber(0);
-        } else if (Input.GetKeyDown(KeyCode.Slash) && numberOfPlayers == 2 && UseCash(1, 2)) {
-            AddInfantry(1);
-        } else if (Input.GetKeyDown(KeyCode.Period) && numberOfPlayers == 2 && UseCash(1, 5)) {
-            AddBomber(1);
         } else if (Input.GetKeyDown(KeyCode.Alpha1)) {
             SetWeapon(0, "bazooka");
         } else if (Input.GetKeyDown(KeyCode.Alpha2) && (hasShotgun[0] || UseCash(0, 12))) {
@@ -98,14 +94,6 @@ public class InGameManager : MonoBehaviour
         } else if (Input.GetKeyDown(KeyCode.Alpha3) && (hasAirstrike[0] || UseCash(0, 17))) {
             hasAirstrike[0] = true;
             SetWeapon(0, "airstrike");
-        } else if (Input.GetKeyDown(KeyCode.Keypad1) && numberOfPlayers == 2) {
-            SetWeapon(1, "bazooka");
-        } else if (Input.GetKeyDown(KeyCode.Keypad2) && numberOfPlayers == 2 && (hasShotgun[0] || UseCash(1, 12))) {
-            hasShotgun[1] = true;
-            SetWeapon(1, "shotgun");
-        } else if (Input.GetKeyDown(KeyCode.Keypad3) && numberOfPlayers == 2 && (hasAirstrike[0] || UseCash(1, 17))) {
-            hasAirstrike[1] = true;
-            SetWeapon(1, "airstrike");
         }
     }
 
@@ -114,21 +102,15 @@ public class InGameManager : MonoBehaviour
     }
 
     public void AddInfantry(int player) {
-        mine.AddInfantry();
-        //     infantryCounts[player]++;
-        //     UpdateUI(player);
-        // }
+        infantryCounts[player]++;
+        mine.AddSoldier("infantry");
+        UpdateUI(player);
     }
 
     public void AddBomber(int player) {
-        GameObject soldier = m_GameManager.m_Tanks[player].GetAvailablePool("bomber");
-        if (soldier) {
-            soldier.transform.position = mine.gameObject.transform.position;
-            soldier.SetActive(true);
-            NetworkServer.Spawn(soldier);
-            bomberCounts[player]++;
-            UpdateUI(player);
-        }
+        bomberCounts[player]++;
+        mine.AddSoldier("bomber");
+        UpdateUI(player);
     }
 
     public void SetWeapon(int player, string weapon) {

@@ -10,7 +10,7 @@ public class AgentHealth : NetworkBehaviour
     public Color m_FullHealthColor = Color.green;
     public Color m_ZeroHealthColor = Color.red;
     public LayerMask m_TankMask;
-    public InGameManager m_InGameManager;
+    public GameManager m_GameManager;
     
     // private AudioSource m_ExplosionAudio;          
     // private ParticleSystem m_ExplosionParticles;   
@@ -38,9 +38,10 @@ public class AgentHealth : NetworkBehaviour
     public void TakeDamage(float amount)
     {
         if (!isServer) return;
+        float temp = m_CurrentHealth;
         RpcTakeDamage(amount);     
 
-        if (m_CurrentHealth <= 0f && !m_Dead)
+        if (temp - amount <= 0f && !m_Dead)
         {
             OnDeath();
         }   
@@ -63,19 +64,25 @@ public class AgentHealth : NetworkBehaviour
     }
 
     [ClientRpc]
+    private void DisableAgent() {
+        gameObject.SetActive(false);
+    }
+
     private void OnDeath()
     {
         m_Dead = true;
-        if (m_InGameManager.mine.isLocalPlayer) {
-            gameObject.SetActive(false);
+        DisableAgent();
+        m_GameManager.UpdateUI(GetComponent<AgentBrain>().type, GetComponent<AgentBrain>().owner);
+        // if (m_InGameManager.mine.isLocalPlayer) {
+        //     gameObject.SetActive(false);
 
-            string type = GetComponent<AgentBrain>().type;
-            int owner = GetComponent<AgentBrain>().owner;
-            if (type == "infantry") {
-                m_InGameManager.RemoveInfantry(0);
-            } else if (type == "bomber") {
-                m_InGameManager.RemoveBomber(0);
-            }
-        }
+        //     string type = GetComponent<AgentBrain>().type;
+        //     int owner = GetComponent<AgentBrain>().owner;
+        //     if (type == "infantry") {
+        //         m_InGameManager.RemoveInfantry(0);
+        //     } else if (type == "bomber") {
+        //         m_InGameManager.RemoveBomber(0);
+        //     }
+        // }
     }
 }

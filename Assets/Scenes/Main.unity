@@ -4314,7 +4314,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 219996030
-  serverOnly: 1
+  serverOnly: 0
   visible: 0
   m_AssetId: 
   hasSpawned: 0
@@ -6946,6 +6946,8 @@ MonoBehaviour:
   m_CloseButton: {fileID: 244465531}
   mine: {fileID: 0}
   numberOfPlayers: 0
+  infantryCounts: 
+  bomberCounts: 
 --- !u!1 &1930063237
 GameObject:
   m_ObjectHideFlags: 0

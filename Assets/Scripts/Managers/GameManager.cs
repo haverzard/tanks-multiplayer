@@ -86,7 +86,6 @@ public class GameManager : NetworkBehaviour
         m_StartButton.enabled = true;
         m_QuitButton.enabled = true;
         DisableMessage();
-        ResetWeapon();
     }
 
     private void QuitGame() {
@@ -103,6 +102,7 @@ public class GameManager : NetworkBehaviour
 
     public void StartGame(int mapIdx) {
         CmdSetName();
+        m_RoundNumber = 0;
         m_MessageScreen.enabled = true;
         m_MapScreen.enabled = false;
 

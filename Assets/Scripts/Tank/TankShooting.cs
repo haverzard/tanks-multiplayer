@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
-public class TankShooting : MonoBehaviour
+public class TankShooting : NetworkBehaviour
 {
     public int m_PlayerNumber = 1;       
     public GameObject m_Shell;            
@@ -25,6 +26,15 @@ public class TankShooting : MonoBehaviour
     private float m_ChargeSpeed;         
     private bool m_Fired;                
 
+    [Command]
+    public void SetWeapon(string weapon) {
+        RpcSetWeapon(weapon);
+    }
+
+    [ClientRpc]
+    private void RpcSetWeapon(string weapon) {
+        m_Weapon = weapon;
+    }
 
     private void OnEnable()
     {
@@ -32,10 +42,9 @@ public class TankShooting : MonoBehaviour
         m_AimSlider.value = m_MinLaunchForce;
     }
 
-
     private void Start()
     {
-        m_FireButton = "Fire" + m_PlayerNumber;
+        m_FireButton = "Fire" + 1;
         bazookaShells = new List<GameObject>();
         shotgunShells = new List<GameObject>();
         airstrikeShells = new List<GameObject>();
@@ -89,6 +98,7 @@ public class TankShooting : MonoBehaviour
 
     private void Update()
     {
+        if (!isLocalPlayer) return;
         // Track the current state of the fire button and make decisions based on the current launch force.
         m_AimSlider.value = m_MinLaunchForce;
         
@@ -96,7 +106,8 @@ public class TankShooting : MonoBehaviour
         {
             // at mac charge, not fired
             m_CurrentLaunchForce = m_MaxLaunchForce;
-            Fire();
+            IMForce(m_MaxLaunchForce);
+            IMFire();
         }
         else if (Input.GetButtonDown(m_FireButton))
         {
@@ -104,20 +115,20 @@ public class TankShooting : MonoBehaviour
             m_Fired = false;
             m_CurrentLaunchForce = m_MinLaunchForce;
 
-            m_ShootingAudio.clip = m_ChargingClip;
-            m_ShootingAudio.Play();
+            IMSound();
         }
         else if (Input.GetButton(m_FireButton) && !m_Fired)
         {
             //Holding the fire button, not yet fired
             m_CurrentLaunchForce += m_ChargeSpeed * Time.deltaTime;
+            IMForce(m_CurrentLaunchForce);
 
             m_AimSlider.value = m_CurrentLaunchForce;
         }
         else if (Input.GetButtonUp(m_FireButton) && !m_Fired)
         {
             // we released the button, having not fired yet
-            Fire();
+            IMFire();
         }
     }
 
@@ -141,6 +152,36 @@ public class TankShooting : MonoBehaviour
         return null;
     }
 
+    [Command]
+    private void IMForce(float force) {
+        Force(force);
+    }
+
+    [ClientRpc]
+    private void Force(float force)
+    {
+        m_CurrentLaunchForce = force;
+    }
+
+    [Command]
+    private void IMSound() {
+        Sound();
+    }
+
+    [ClientRpc]
+    private void Sound()
+    {
+        m_ShootingAudio.clip = m_ChargingClip;
+        m_ShootingAudio.Play();
+    }
+
+
+    [Command]
+    private void IMFire() {
+        Fire();
+    }
+
+    [ClientRpc]
     private void Fire()
     {
         // Instantiate and launch the shell.
@@ -152,6 +193,7 @@ public class TankShooting : MonoBehaviour
                 shellInstance.transform.position = m_FireTransform.position;
                 shellInstance.transform.rotation = m_FireTransform.rotation;
                 shellInstance.SetActive(true);
+
                 shellInstance.GetComponent<Rigidbody>().velocity = m_CurrentLaunchForce * m_FireTransform.forward;
             }
         } else if (m_Weapon == "shotgun") { 
@@ -189,7 +231,6 @@ public class TankShooting : MonoBehaviour
 
         m_ShootingAudio.clip = m_FireClip;
         m_ShootingAudio.Play();
-
         m_CurrentLaunchForce = m_MinLaunchForce;
     }
 }

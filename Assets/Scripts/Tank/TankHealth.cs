@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
-public class TankHealth : MonoBehaviour
+public class TankHealth : NetworkBehaviour
 {
     public float m_StartingHealth = 100f;          
     public Slider m_Slider;                        
@@ -9,7 +10,7 @@ public class TankHealth : MonoBehaviour
     public Color m_FullHealthColor = Color.green;  
     public Color m_ZeroHealthColor = Color.red;    
     public GameObject m_ExplosionPrefab;
-    
+    public GameManager m_GameManager;
     
     private AudioSource m_ExplosionAudio;          
     private ParticleSystem m_ExplosionParticles;   
@@ -33,19 +34,24 @@ public class TankHealth : MonoBehaviour
 
         SetHealthUI();
     }
-    
 
     public void TakeDamage(float amount)
     {
-        // Adjust the tank's current health, update the UI based on the new health and check whether or not the tank is dead.
-        m_CurrentHealth -= amount;
+        if (!isServer) return;
+        float temp = m_CurrentHealth;
+        RpcTakeDamage(amount);
 
-        SetHealthUI();
-
-        if (m_CurrentHealth <= 0f && !m_Dead)
+        if (temp - amount <= 0f && !m_Dead)
         {
             OnDeath();
         }
+    }
+
+    [ClientRpc]
+    private void RpcTakeDamage(float amount) {
+        m_CurrentHealth -= amount;
+
+        SetHealthUI();
     }
 
 
@@ -69,6 +75,15 @@ public class TankHealth : MonoBehaviour
         m_ExplosionParticles.Play();
 
         m_ExplosionAudio.Play();
+        if (!m_GameManager.isStarted) {
+            GetComponent<TankManager>().Reset();
+        } else {
+            GetComponent<TankManager>().m_IsAlive = false;
+        }
+    }
+
+    [Command]
+    private void Disable() {
         gameObject.SetActive(false);
     }
 }

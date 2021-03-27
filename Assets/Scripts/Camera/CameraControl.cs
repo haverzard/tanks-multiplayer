@@ -22,6 +22,7 @@ public class CameraControl : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (m_Targets.Length == 0 || !m_Targets[0]) return;
         Move();
         Zoom();
     }

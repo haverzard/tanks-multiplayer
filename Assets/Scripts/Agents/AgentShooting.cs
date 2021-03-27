@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using Mirror;
 
-public class AgentShooting : MonoBehaviour
+public class AgentShooting : NetworkBehaviour
 {
     public Rigidbody m_Shell;            
     public Transform m_FireTransform;    
@@ -37,34 +38,37 @@ public class AgentShooting : MonoBehaviour
 
     private IEnumerator FireLoop() {
         yield return new WaitForSeconds(1f);
-        anim.SetBool("Shooting", false);
-        Collider[] colliders = Physics.OverlapSphere(transform.position, 10f, m_TankMask);
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            Rigidbody targetRigidbody = colliders[i].GetComponent<Rigidbody>();
-            if (!targetRigidbody) continue;
-            
-            TankHealth tankHealth = targetRigidbody.GetComponent<TankHealth>();
-            AgentHealth agentHealth = targetRigidbody.GetComponent<AgentHealth>();
+        if (isServer) {
+            anim.SetBool("Shooting", false);
+            Collider[] colliders = Physics.OverlapSphere(transform.position, 10f, m_TankMask);
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                Rigidbody targetRigidbody = colliders[i].GetComponent<Rigidbody>();
+                if (!targetRigidbody) continue;
+                
+                TankHealth tankHealth = targetRigidbody.GetComponent<TankHealth>();
+                AgentHealth agentHealth = targetRigidbody.GetComponent<AgentHealth>();
 
-            if (!tankHealth && !agentHealth)
-                continue;
-            
-            if (tankHealth != null && targetRigidbody.GetComponent<TankMovement>().m_PlayerNumber == owner)
-                continue;
+                if (!tankHealth && !agentHealth)
+                    continue;
+                
+                if (tankHealth != null && targetRigidbody.GetComponent<TankMovement>().m_PlayerNumber == owner)
+                    continue;
 
-            if (agentHealth != null && targetRigidbody.GetComponent<AgentBrain>().owner == owner)
-                continue;
+                if (agentHealth != null && targetRigidbody.GetComponent<AgentBrain>().owner == owner)
+                    continue;
 
-            transform.LookAt(targetRigidbody.GetComponent<Transform>());
-            Fire();
-            break;
+                Fire(targetRigidbody.transform);
+                break;
+            }
         }
         StartCoroutine(FireLoop());
     }
 
-    private void Fire()
+    [ClientRpc]
+    private void Fire(Transform t)
     {
+        transform.LookAt(t);
         anim.SetBool("Shooting", true);
         Rigidbody shellInstance = Instantiate(m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
         Transform shellTransform = shellInstance.GetComponent<Transform>();

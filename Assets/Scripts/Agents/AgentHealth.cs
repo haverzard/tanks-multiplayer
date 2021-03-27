@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
-public class AgentHealth : MonoBehaviour
+public class AgentHealth : NetworkBehaviour
 {
     public float m_StartingHealth = 40f;
     public Slider m_Slider;
@@ -9,21 +10,10 @@ public class AgentHealth : MonoBehaviour
     public Color m_FullHealthColor = Color.green;
     public Color m_ZeroHealthColor = Color.red;
     public LayerMask m_TankMask;
-    public InGameManager m_InGameManager;
+    public GameManager m_GameManager;
     
-    // private AudioSource m_ExplosionAudio;          
-    // private ParticleSystem m_ExplosionParticles;   
-    private float m_CurrentHealth;  
-    private bool m_Dead;            
-
-
-    private void Awake()
-    {
-        // m_ExplosionParticles = Instantiate(m_ExplosionPrefab).GetComponent<ParticleSystem>();
-        // m_ExplosionAudio = m_ExplosionParticles.GetComponent<AudioSource>();
-
-        // m_ExplosionParticles.gameObject.SetActive(false);
-    }
+    private float m_CurrentHealth;
+    private bool m_Dead;
 
 
     private void OnEnable()
@@ -34,18 +24,23 @@ public class AgentHealth : MonoBehaviour
         SetHealthUI();
     }
     
-
     public void TakeDamage(float amount)
     {
-        // Adjust the tank's current health, update the UI based on the new health and check whether or not the tank is dead.
+        if (!isServer) return;
+        float temp = m_CurrentHealth;
+        RpcTakeDamage(amount);     
+
+        if (temp - amount <= 0f && !m_Dead)
+        {
+            OnDeath();
+        }   
+    }
+
+    [ClientRpc]
+    private void RpcTakeDamage(float amount) {
         m_CurrentHealth -= amount;
 
         SetHealthUI();
-
-        if (m_CurrentHealth <= 0f && !m_Dead)
-        {
-            OnDeath();
-        }
     }
 
 
@@ -57,25 +52,15 @@ public class AgentHealth : MonoBehaviour
         m_FillImage.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
     }
 
+    [ClientRpc]
+    private void DisableAgent() {
+        gameObject.SetActive(false);
+    }
 
     private void OnDeath()
     {
-        // Play the effects for the death of the tank and deactivate it.
         m_Dead = true;
-
-        // m_ExplosionParticles.transform.position = transform.position;
-        // m_ExplosionParticles.gameObject.SetActive(true);
-
-        // m_ExplosionParticles.Play();
-
-        // m_ExplosionAudio.Play();
-        gameObject.SetActive(false);
-        string type = GetComponent<AgentBrain>().type;
-        int owner = GetComponent<AgentBrain>().owner;
-        if (type == "infantry") {
-            m_InGameManager.RemoveInfantry(owner-1);
-        } else if (type == "bomber") {
-            m_InGameManager.RemoveBomber(owner-1);
-        }
+        DisableAgent();
+        m_GameManager.UpdateUI(GetComponent<AgentBrain>().type, GetComponent<AgentBrain>().owner);
     }
 }

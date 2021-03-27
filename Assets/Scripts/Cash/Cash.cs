@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class Cash : MonoBehaviour
+public class Cash : NetworkBehaviour
 {
     public GameManager m_GameManager;
 
@@ -10,20 +11,30 @@ public class Cash : MonoBehaviour
 
     private void OnEnable()
     {
-        Invoke("Disable", m_MaxLifeTime);
+        Invoke("IMDisable", m_MaxLifeTime);
     }
 
-    private void Disable() {
-        gameObject.SetActive(false);
+    private void IMDisable() {
+        if (!isServer) return;
+        RpcDisable();
     }
 
-    private void OnCollisionEnter(Collision other)
+    private void OnTriggerEnter(Collider other)
     {
+        if (!isServer) return;
         GameObject obj = other.gameObject;
-        TankMovement tankMovement = obj.GetComponent<TankMovement>();
-        if (!tankMovement)
+        TankManager tm = obj.GetComponent<TankManager>();
+
+        if (!tm)
             return;
-        m_GameManager.m_InGameManager.AddCash(tankMovement.m_PlayerNumber-1);
+        RpcDisable();
+        int temp = tm.m_Cash;
+        tm.m_Cash = temp + 1;
+        m_GameManager.UpdateCash(temp + 1, tm.m_PlayerNumber);
+    }
+
+    [ClientRpc]
+    private void RpcDisable() {
         gameObject.SetActive(false);
     }
 }

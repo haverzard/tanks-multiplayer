@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using Mirror;
 
-public class TankMovement : MonoBehaviour
+public class TankMovement : NetworkBehaviour
 {
     public int m_PlayerNumber = 1;         
     public float m_Speed = 12f;            
@@ -41,8 +42,8 @@ public class TankMovement : MonoBehaviour
 
     private void Start()
     {
-        m_MovementAxisName = "Vertical" + m_PlayerNumber;
-        m_TurnAxisName = "Horizontal" + m_PlayerNumber;
+        m_MovementAxisName = "Vertical" + 1;
+        m_TurnAxisName = "Horizontal" + 1;
 
         m_OriginalPitch = m_MovementAudio.pitch;
     }
@@ -50,13 +51,13 @@ public class TankMovement : MonoBehaviour
 
     private void Update()
     {
+        if (!isLocalPlayer) return;
         // Store the player's input and make sure the audio for the engine is playing.
         m_MovementInputValue = Input.GetAxis(m_MovementAxisName);
         m_TurnInputValue = Input.GetAxis(m_TurnAxisName);
 
         EngineAudio();
     }
-
 
     private void EngineAudio()
     {
@@ -81,7 +82,6 @@ public class TankMovement : MonoBehaviour
         }
 
     }
-
 
     private void FixedUpdate()
     {

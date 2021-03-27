@@ -1,24 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class CashManager : MonoBehaviour
+public class CashManager : NetworkBehaviour
 {
     public GameObject m_CoinPrefab;
     public MapManager m_MapManager;
+    public GameManager m_GameManager;
 
     [HideInInspector] public List<GameObject> m_Coins;
 
     private int m_CoinCounts = 5;
     private Coroutine coroutine;
 
-    private void Start()
+    [Server]
+    public void Init()
     {
+        m_CoinPrefab.GetComponent<Cash>().m_GameManager = m_GameManager;
+        if (m_Coins.Count != 0) return;
+        GameObject coin;
         for (int i = 0; i < 50; i++) {
-            m_Coins.Add(null);
-            m_Coins[i] = Instantiate(m_CoinPrefab, new Vector3(0,0,0), Quaternion.identity) as GameObject;
-            m_Coins[i].GetComponent<Cash>().m_GameManager = GetComponent<GameManager>();
-            m_Coins[i].SetActive(false);
+            coin = Instantiate(m_CoinPrefab, new Vector3(0,0,0), Quaternion.identity);
+            m_Coins.Add(coin);
+            coin.SetActive(false);
         }
     }
 
@@ -31,11 +36,16 @@ public class CashManager : MonoBehaviour
     }
 
     public GameObject GetAvailablePool() {
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < m_Coins.Count; i++) {
             if (m_Coins[i].activeSelf) continue;
             return m_Coins[i];
         }
         return null;
+    }
+
+    [ClientRpc]
+    public void ShowToMe(GameObject coin) {
+        coin.SetActive(true);
     }
 
     private IEnumerator SpawnCoins()
@@ -50,6 +60,8 @@ public class CashManager : MonoBehaviour
                 Vector3 pos = new Vector3(x, 0, z);
                 coin.transform.position = pos;
                 coin.SetActive(true);
+                NetworkServer.Spawn(coin);
+                ShowToMe(coin);
             }
         }
         coroutine = StartCoroutine(SpawnCoins());

@@ -3,60 +3,89 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Mirror;
 
-public class GameManager : MonoBehaviour
+
+public class GameManager : NetworkBehaviour
 {
     public int m_NumRoundsToWin = 5;
     public float m_StartDelay = 3f;
     public float m_EndDelay = 3f;
     public CameraControl m_CameraControl;
     public Text m_MessageText;
-    public GameObject m_TankPrefab;
     public MapManager[] m_Maps;
-    public TankManager[] m_Tanks;
     public GameObject[] m_SoldierPrefabs;
     public InGameManager m_InGameManager;
+    public ClientManager m_ClientManager;
+    public CashManager m_CashManager;
+    [HideInInspector] [SyncVar (hook = "SetTanks")] public List<TankManager> m_Tanks;
 
     public Canvas m_MessageScreen;
     public Canvas m_SettingsScreen;
     public Canvas m_StartScreen;
+    public Canvas m_NameScreen;
     public Canvas m_MapScreen;
     public Button m_StartButton;
     public Button m_QuitButton;
 
+    public bool isStarted;
 
     private int m_RoundNumber;
     private WaitForSeconds m_StartWait;
     private WaitForSeconds m_EndWait;
     private TankManager m_RoundWinner;
     private TankManager m_GameWinner;
-    private CashManager m_CashManager;
+    private int m_MapIdx = 0;
+    private string m_Name;
 
+    [Client]
+    public void SetTanks(List<TankManager> oldVal, List<TankManager> newVal) {
+        m_Tanks = newVal;
+    }
 
-    private void Start()
-    {
-        m_StartWait = new WaitForSeconds (m_StartDelay);
-        m_EndWait = new WaitForSeconds (m_EndDelay);
-        m_CashManager = GetComponent<CashManager>();
+    private void Start() {
+        isStarted = false;
+        m_NameScreen.enabled = false;
         m_InGameManager.gameObject.SetActive(false);
+        m_Name = m_ClientManager.name;
         
         for (int i = 0; i < m_Maps.Length; i++) {
-            m_Maps[i].Init();
-            m_Maps[i].m_MapPrefab.SetActive(false);
+            int mapIdx = i;
+            m_Maps[i].m_MapButton.onClick.AddListener(() => StartGame(mapIdx));
         }
         m_Maps[0].m_MapPrefab.SetActive(true);
 
-        initSoldiers();
 
         m_MessageScreen.enabled = false;
         m_SettingsScreen.enabled = false;
         m_MapScreen.enabled = false;
+        m_StartScreen.enabled = false;
 
         m_StartButton.onClick.AddListener(ChooseMap);
         m_QuitButton.onClick.AddListener(QuitGame);
     }
 
-    private void Update() {
+    [Server]
+    public void CmdSetName() {
+        SetName();
+    }
+
+    [ClientRpc]
+    public void SetName() {
+        for (int i = 0; i < m_Tanks.Count; i++) {
+            Debug.Log("NAME :"+m_Name);
+            if (m_Tanks[i].isLocalPlayer) {
+                m_Tanks[i].SetName(m_Name);
+                return;
+            }
+        }
+    }
+
+    public void Init() {
+        m_StartScreen.enabled = true;
+        m_StartButton.enabled = true;
+        m_QuitButton.enabled = true;
+        DisableMessage();
     }
 
     private void QuitGame() {
@@ -72,74 +101,71 @@ public class GameManager : MonoBehaviour
     }
 
     public void StartGame(int mapIdx) {
-        m_MapScreen.enabled = false;
+        CmdSetName();
+        m_RoundNumber = 0;
         m_MessageScreen.enabled = true;
+        m_MapScreen.enabled = false;
 
         m_CashManager.m_MapManager = m_Maps[mapIdx];
+        m_MapIdx = mapIdx;
 
-        m_Maps[0].m_MapPrefab.SetActive(false);
-        m_Maps[mapIdx].m_MapPrefab.SetActive(true);
+        for (int i = 0; i < m_Tanks.Count; i++) {
+            m_Tanks[i].SetSpawnPoint(m_Maps[m_MapIdx].m_SpawnPoints[i]);
+            m_Tanks[i].m_Cash = 5;
+        }
 
-        SpawnAllTanks(mapIdx);
-        SetCameraTargets();
+        m_StartWait = new WaitForSeconds (m_StartDelay);
+        m_EndWait = new WaitForSeconds (m_EndDelay);
+
+        isStarted = true;
+        m_CashManager.Init();
+        EnableMessage();
+        FlagStart();
+        ResetWinTanks();
+
         StartCoroutine(GameLoop());
     }
 
-    private void initSoldiers() {
-        for (int i = 0; i < m_SoldierPrefabs.Length; i++) {
-            m_SoldierPrefabs[i].GetComponent<AgentHealth>().m_InGameManager = m_InGameManager;
-            m_SoldierPrefabs[i].GetComponent<AgentBrain>().m_GameManager = this;
-        }
 
-        AgentBrain ab1 = m_SoldierPrefabs[0].GetComponent<AgentBrain>();
-        ab1.minDistance = 10f;
-        ab1.type = "infantry";
-
-        AgentBrain ab2 = m_SoldierPrefabs[1].GetComponent<AgentBrain>();
-        ab2.minDistance = 0f;
-        ab2.type = "bomber";
-    }
-
-    private void SpawnAllTanks(int mapIdx)
-    {
-        for (int i = 0; i < m_Tanks.Length; i++)
-        {
-            m_Tanks[i].m_Instance =
-                Instantiate(m_TankPrefab, m_Maps[mapIdx].m_SpawnPoints[i].position, m_Maps[mapIdx].m_SpawnPoints[i].rotation) as GameObject;
-            m_Tanks[i].m_SpawnPoint = m_Maps[mapIdx].m_SpawnPoints[i];
-            m_Tanks[i].m_PlayerNumber = i + 1;
-            m_Tanks[i].Setup();
-
-            // init characters' pooling
-            TankManager tm = m_Tanks[i];
-            for (int j = 0; j < tm.m_InfantryPoolSize; j++) {
-                tm.m_Infantries.Add(null);
-                tm.m_Infantries[j] = Instantiate(m_SoldierPrefabs[0], new Vector3(0,0,0), Quaternion.identity) as GameObject;
-                tm.m_Infantries[j].GetComponent<AgentBrain>().owner = i + 1;
-                tm.m_Infantries[j].SetActive(false);
-            }
-            for (int j = 0; j < tm.m_BomberPoolSize; j++) {
-                tm.m_Bombers.Add(null);
-                tm.m_Bombers[j] = Instantiate(m_SoldierPrefabs[1], new Vector3(0,0,0), Quaternion.identity) as GameObject;
-                tm.m_Bombers[j].GetComponent<AgentBrain>().owner = i + 1;
-                tm.m_Bombers[j].SetActive(false);
+    [ClientRpc]
+    public void UpdateUI(string type, int owner) {
+        if (m_InGameManager.mine.m_PlayerNumber == owner) {
+            if (type == "infantry") {
+                m_InGameManager.RemoveInfantry(0);
+            } else if (type == "bomber") {
+                m_InGameManager.RemoveBomber(0);
             }
         }
     }
 
-
-    private void SetCameraTargets()
-    {
-        Transform[] targets = new Transform[m_Tanks.Length];
-
-        for (int i = 0; i < targets.Length; i++)
-        {
-            targets[i] = m_Tanks[i].m_Instance.transform;
+    [ClientRpc]
+    public void UpdateCash(int val, int owner) {
+        if (m_InGameManager.mine.m_PlayerNumber == owner) {
+            m_InGameManager.AddCash(val, 0);
         }
-
-        m_CameraControl.m_Targets = targets;
     }
 
+    [ClientRpc]
+    private void EnableMessage() {
+        m_MessageScreen.enabled = true;
+        m_InGameManager.SetActive(true);
+    }
+
+    [ClientRpc]
+    private void DisableMessage() {
+        m_MessageScreen.enabled = false;
+        m_InGameManager.SetActive(false);
+    }
+
+    [ClientRpc]
+    private void ShowMessage(string t) {
+        m_MessageText.text = t;
+    }
+
+    [ClientRpc]
+    private void FlagStart() {
+        isStarted = true;
+    }
 
     private IEnumerator GameLoop()
     {
@@ -149,14 +175,13 @@ public class GameManager : MonoBehaviour
 
         if (m_GameWinner != null)
         {
-            SceneManager.LoadScene(0);
+            Init();
         }
         else
         {
             StartCoroutine(GameLoop());
         }
     }
-
 
     private IEnumerator RoundStarting()
     {
@@ -168,7 +193,7 @@ public class GameManager : MonoBehaviour
         m_CameraControl.SetStartPositionAndSize();
 
         m_RoundNumber++;
-        m_MessageText.text = "ROUND " + m_RoundNumber;
+        ShowMessage("ROUND " + m_RoundNumber);
 
         yield return m_StartWait;
     }
@@ -178,9 +203,9 @@ public class GameManager : MonoBehaviour
     {
         EnableTankControl();
 
-        m_InGameManager.gameObject.SetActive(true);
+        m_InGameManager.SetActive(true);
 
-        m_MessageText.text = string.Empty;
+        ShowMessage(string.Empty);
 
         while (!OneTankLeft())
         {
@@ -188,18 +213,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     private IEnumerator RoundEnding()
     {
-        DisableTankControl();
-
         m_CashManager.StopSpawn();
 
-        m_InGameManager.gameObject.SetActive(false);
+        m_InGameManager.SetActive(false);
 
         m_RoundWinner = null;
 
         m_RoundWinner = GetRoundWinner();
+
+        DisableTankControl();
 
         if (m_RoundWinner != null)
             m_RoundWinner.m_Wins++;
@@ -207,19 +231,18 @@ public class GameManager : MonoBehaviour
         m_GameWinner = GetGameWinner();
 
         string message = EndMessage();
-        m_MessageText.text = message;
+        ShowMessage(message);
 
         yield return m_EndWait;
     }
-
 
     private bool OneTankLeft()
     {
         int numTanksLeft = 0;
 
-        for (int i = 0; i < m_Tanks.Length; i++)
+        for (int i = 0; i < m_Tanks.Count; i++)
         {
-            if (m_Tanks[i].m_Instance.activeSelf)
+            if (m_Tanks[i].m_IsAlive)
                 numTanksLeft++;
         }
 
@@ -229,9 +252,9 @@ public class GameManager : MonoBehaviour
 
     private TankManager GetRoundWinner()
     {
-        for (int i = 0; i < m_Tanks.Length; i++)
+        for (int i = 0; i < m_Tanks.Count; i++)
         {
-            if (m_Tanks[i].m_Instance.activeSelf)
+            if (m_Tanks[i].m_IsAlive)
                 return m_Tanks[i];
         }
 
@@ -241,7 +264,7 @@ public class GameManager : MonoBehaviour
 
     private TankManager GetGameWinner()
     {
-        for (int i = 0; i < m_Tanks.Length; i++)
+        for (int i = 0; i < m_Tanks.Count; i++)
         {
             if (m_Tanks[i].m_Wins == m_NumRoundsToWin)
                 return m_Tanks[i];
@@ -260,7 +283,7 @@ public class GameManager : MonoBehaviour
 
         message += "\n\n\n\n";
 
-        for (int i = 0; i < m_Tanks.Length; i++)
+        for (int i = 0; i < m_Tanks.Count; i++)
         {
             message += m_Tanks[i].m_ColoredPlayerText + ": " + m_Tanks[i].m_Wins + " WINS\n";
         }
@@ -268,13 +291,20 @@ public class GameManager : MonoBehaviour
         if (m_GameWinner != null)
             message = m_GameWinner.m_ColoredPlayerText + " WINS THE GAME!";
 
-        return message;
+        return message; 
     }
 
+    private void ResetWinTanks()
+    {
+        for (int i = 0; i < m_Tanks.Count; i++)
+        {
+            m_Tanks[i].m_Wins = 0;
+        }
+    }
 
     private void ResetAllTanks()
     {
-        for (int i = 0; i < m_Tanks.Length; i++)
+        for (int i = 0; i < m_Tanks.Count; i++)
         {
             m_Tanks[i].Reset();
         }
@@ -282,18 +312,18 @@ public class GameManager : MonoBehaviour
 
     private void EnableTankControl()
     {
-        for (int i = 0; i < m_Tanks.Length; i++)
+        for (int i = 0; i < m_Tanks.Count; i++)
         {
-            m_Tanks[i].EnableControl();
+            m_Tanks[i].m_IsAlive = true;
         }
     }
 
 
     private void DisableTankControl()
     {
-        for (int i = 0; i < m_Tanks.Length; i++)
+        for (int i = 0; i < m_Tanks.Count; i++)
         {
-            m_Tanks[i].DisableControl();
+            m_Tanks[i].m_IsAlive = false;
         }
     }
 }

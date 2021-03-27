@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
 public class InGameManager : MonoBehaviour
 {
@@ -10,7 +11,6 @@ public class InGameManager : MonoBehaviour
     public Text[] m_InfantryCounter;
     public Text[] m_BomberCounter;
     public Text[] m_CashCounter;
-    public int m_InitMoney = 5;
 
     public RectTransform m_InfoPanel;
     public Text m_HelpText;
@@ -18,27 +18,26 @@ public class InGameManager : MonoBehaviour
     public Button m_HelpButton;
     public Button m_PriceButton;
     public Button m_CloseButton;
+    public int m_TempCash;
 
+    [HideInInspector] public TankManager mine;
     [HideInInspector] public int numberOfPlayers;
 
     private List<bool> hasShotgun;
     private List<bool> hasAirstrike;
-    private List<int> infantryCounts;
-    private List<int> bomberCounts;
-    private List<int> cashCounts;
+    [HideInInspector] public List<int> infantryCounts;
+    [HideInInspector] public List<int> bomberCounts;
 
     private void Start()
     {
-        numberOfPlayers = 2;
+        numberOfPlayers = 1;
         infantryCounts = new List<int>();
         bomberCounts = new List<int>();
-        cashCounts = new List<int>();
         hasShotgun = new List<bool>();
         hasAirstrike = new List<bool>();
         for (int i = 0; i < numberOfPlayers; i++) {
             infantryCounts.Add(0);
             bomberCounts.Add(0);
-            cashCounts.Add(m_InitMoney);
             hasShotgun.Add(false);
             hasAirstrike.Add(false);
             UpdateUI(i);
@@ -64,7 +63,7 @@ public class InGameManager : MonoBehaviour
     }
 
     private void OnEnable() {
-        numberOfPlayers = Math.Min(numberOfPlayers, 2);
+        numberOfPlayers = Math.Min(numberOfPlayers, 1);
         for (int i = 0; i < numberOfPlayers; i++) {
             infantryCounts[i] = 0;
             bomberCounts[i] = 0;
@@ -74,18 +73,21 @@ public class InGameManager : MonoBehaviour
             m_InfantryCounter[1].enabled = false;
             m_BomberCounter[1].enabled = false;
         }
+        for (int i = 0; i < m_GameManager.m_Tanks.Count; i++) {
+            if (m_GameManager.m_Tanks[i].GetComponent<NetworkIdentity>().isLocalPlayer) {
+                mine = m_GameManager.m_Tanks[i];
+                m_TempCash = mine.m_Cash;
+                break;
+            }
+        }
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R) && UseCash(0, 2)) {
+        if (Input.GetKeyDown(KeyCode.R) && infantryCounts[0] < 20 && UseCash(0, 2)) {
             AddInfantry(0);
-        } else if (Input.GetKeyDown(KeyCode.F) && UseCash(0, 5)) {
+        } else if (Input.GetKeyDown(KeyCode.F) && bomberCounts[0] < 10 && UseCash(0, 5)) {
             AddBomber(0);
-        } else if (Input.GetKeyDown(KeyCode.Slash) && numberOfPlayers == 2 && UseCash(1, 2)) {
-            AddInfantry(1);
-        } else if (Input.GetKeyDown(KeyCode.Period) && numberOfPlayers == 2 && UseCash(1, 5)) {
-            AddBomber(1);
         } else if (Input.GetKeyDown(KeyCode.Alpha1)) {
             SetWeapon(0, "bazooka");
         } else if (Input.GetKeyDown(KeyCode.Alpha2) && (hasShotgun[0] || UseCash(0, 12))) {
@@ -94,39 +96,27 @@ public class InGameManager : MonoBehaviour
         } else if (Input.GetKeyDown(KeyCode.Alpha3) && (hasAirstrike[0] || UseCash(0, 17))) {
             hasAirstrike[0] = true;
             SetWeapon(0, "airstrike");
-        } else if (Input.GetKeyDown(KeyCode.Keypad1) && numberOfPlayers == 2) {
-            SetWeapon(1, "bazooka");
-        } else if (Input.GetKeyDown(KeyCode.Keypad2) && numberOfPlayers == 2 && (hasShotgun[0] || UseCash(1, 12))) {
-            hasShotgun[1] = true;
-            SetWeapon(1, "shotgun");
-        } else if (Input.GetKeyDown(KeyCode.Keypad3) && numberOfPlayers == 2 && (hasAirstrike[0] || UseCash(1, 17))) {
-            hasAirstrike[1] = true;
-            SetWeapon(1, "airstrike");
         }
+    }
+
+    public void SetActive(bool active) {
+        gameObject.SetActive(active);
     }
 
     public void AddInfantry(int player) {
-        GameObject soldier = m_GameManager.m_Tanks[player].GetAvailablePool("infantry");
-        if (soldier) {
-            soldier.transform.position = m_GameManager.m_Tanks[player].m_Instance.transform.position;
-            soldier.SetActive(true);
-            infantryCounts[player]++;
-            UpdateUI(player);
-        }
+        infantryCounts[player]++;
+        mine.AddSoldier("infantry");
+        UpdateUI(player);
     }
 
     public void AddBomber(int player) {
-        GameObject soldier = m_GameManager.m_Tanks[player].GetAvailablePool("bomber");
-        if (soldier) {
-            soldier.transform.position = m_GameManager.m_Tanks[player].m_Instance.transform.position;
-            soldier.SetActive(true);
-            bomberCounts[player]++;
-            UpdateUI(player);
-        }
+        bomberCounts[player]++;
+        mine.AddSoldier("bomber");
+        UpdateUI(player);
     }
 
     public void SetWeapon(int player, string weapon) {
-        m_GameManager.m_Tanks[player].m_Instance.GetComponent<TankShooting>().m_Weapon = weapon;
+        mine.GetComponent<TankShooting>().SetWeapon(weapon);
     }
 
     public void RemoveInfantry(int player) {
@@ -139,16 +129,16 @@ public class InGameManager : MonoBehaviour
         UpdateUI(player);
     }
 
-    public void AddCash(int player) {
-        if (cashCounts[player] < 9999999) {
-            cashCounts[player]++;
-            UpdateUI(player);
-        }
+    public void AddCash(int val, int player) {
+        m_TempCash = val;
+        UpdateUI(player);
     }
 
     public bool UseCash(int player, int amount) {
-        if (cashCounts[player] >= amount) {
-            cashCounts[player] -= amount;
+        if (mine.m_Cash >= amount) {
+            int temp = mine.m_Cash;
+            mine.SetCash(mine.m_Cash - amount);
+            m_TempCash = temp - amount;
             UpdateUI(player);
             return true;
         }
@@ -158,6 +148,6 @@ public class InGameManager : MonoBehaviour
     public void UpdateUI(int player) {
         m_InfantryCounter[player].text = infantryCounts[player]+" / 20";
         m_BomberCounter[player].text = bomberCounts[player]+" / 10";
-        m_CashCounter[player].text = cashCounts[player].ToString();
+        m_CashCounter[player].text = m_TempCash.ToString();
     }
 }
